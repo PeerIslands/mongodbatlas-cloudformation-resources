@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/cluster/cmd/validation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -29,20 +32,22 @@ func cast64(i *int) *int64 {
 	x := cast.ToInt64(&i)
 	return &x
 }
-func boolPtr(i bool) *bool {
-	return &i
-}
-func intPtr(i int) *int {
-	return &i
-}
-func stringPtr(i string) *string {
-	return &i
+
+// validateModel inputs based on the method
+func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(event, validation.ModelValidator{}, model)
 }
 
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("Create() currentModel:%+v", currentModel)
+
+	modelValidation := validateModel(constants.Create, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		log.Infof("Create - error: %+v", err)
@@ -60,7 +65,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	projectID := *currentModel.ProjectId
 	log.Infof("cluster Create projectID=%s", projectID)
 	if len(currentModel.ReplicationSpecs) > 0 {
-		if currentModel.ClusterType != nil {
+		if currentModel.ClusterType == nil {
 			err := errors.New("error creating cluster: ClusterType should be set when `ReplicationSpecs` is set")
 			log.Infof("Create - error: %+v", err)
 			return handler.ProgressEvent{
@@ -69,7 +74,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 				HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest}, nil
 		}
 
-		if currentModel.NumShards != nil {
+		if currentModel.NumShards == nil {
 			err := errors.New("error creating cluster: NumShards should be set when `ReplicationSpecs` is set")
 			log.Infof("Create - error: %+v", err)
 			return handler.ProgressEvent{
@@ -89,7 +94,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	resourceID := util.NewResourceIdentifier("Cluster", *currentModel.Name, projectResID)
 	log.Debugf("Created resourceID:%s", resourceID)
 	resourceProps := map[string]string{
-		"Clust:erName": *currentModel.Name,
+		"ClusterName": *currentModel.Name,
 	}
 	secretName, err := util.CreateDeploymentSecret(&req, resourceID, *currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey, &resourceProps)
 	if err != nil {
@@ -158,6 +163,13 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
 	}
 
+	if currentModel.VersionReleaseSystem != nil {
+		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
+	}
+
+	if currentModel.PitEnabled != nil {
+		clusterRequest.PitEnabled = currentModel.PitEnabled
+	}
 	if currentModel.AutoScaling != nil {
 		clusterRequest.AutoScaling = &mongodbatlas.AutoScaling{
 			DiskGBEnabled: currentModel.AutoScaling.DiskGBEnabled,
@@ -215,6 +227,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("Read() currentModel:%+v", currentModel)
+
+	modelValidation := validateModel(constants.Read, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
 
 	// Callback is not called - Create() and Update() get recalled on
 	// long running operations
@@ -334,6 +351,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	currentModel.Paused = cluster.Paused
 	currentModel.SrvAddress = &cluster.SrvAddress
 	currentModel.StateName = &cluster.StateName
+	currentModel.PitEnabled = cluster.PitEnabled
 
 	//NOT TESTED WITH BI-CONNECTOR YET
 	//if currentModel.BiConnector != nil {
@@ -402,6 +420,22 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		currentModel.ReplicationSpecs = flattenReplicationSpecs(cluster.ReplicationSpecs)
 	}
 
+	if currentModel.VersionReleaseSystem != nil {
+		currentModel.VersionReleaseSystem = &cluster.VersionReleaseSystem
+	}
+
+	if currentModel.PitEnabled != nil {
+		currentModel.PitEnabled = cluster.PitEnabled
+	}
+
+	if len(currentModel.Labels) > 0 {
+		for _, label := range currentModel.Labels {
+			if label.Key != nil && label.Value != nil {
+				currentModel.Labels = append(currentModel.Labels, Labels{Key: label.Key, Value: label.Value})
+			}
+		}
+	}
+
 	if currentModel.ReplicationFactor != nil {
 		currentModel.ReplicationFactor = castNO64(cluster.ReplicationFactor)
 	}
@@ -417,6 +451,12 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 // Update handles the Update event from the Cloudformation service.
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+
+	modelValidation := validateModel(constants.Update, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	log.Debugf("Update() currentModel:%+v", currentModel)
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
@@ -472,6 +512,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		DiskSizeGB:               currentModel.DiskSizeGB,
 		ProviderBackupEnabled:    currentModel.ProviderBackupEnabled,
 		AutoScaling:              autoScaling,
+		PitEnabled:               currentModel.PitEnabled,
 	}
 	if currentModel.BiConnector != nil {
 		clusterRequest.BiConnector = expandBiConnector(currentModel.BiConnector)
@@ -492,6 +533,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	if currentModel.MongoDBMajorVersion != nil {
 		clusterRequest.MongoDBMajorVersion = formatMongoDBMajorVersion(*currentModel.MongoDBMajorVersion)
+	}
+
+	if currentModel.VersionReleaseSystem != nil {
+		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
+	}
+
+	if len(currentModel.Labels) > 0 {
+		for _, label := range currentModel.Labels {
+			if label.Key != nil && label.Value != nil {
+				clusterRequest.Labels = append(clusterRequest.Labels, mongodbatlas.Label{Key: *label.Key, Value: *label.Value})
+			}
+		}
 	}
 
 	log.Debugf("Cluster update clusterRequest:%+v", clusterRequest)
@@ -534,6 +587,12 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 	log.Debugf("Delete() currentModel:%+v", currentModel)
+
+	modelValidation := validateModel(constants.Delete, currentModel)
+	if modelValidation != nil {
+		return *modelValidation, nil
+	}
+
 	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
 	if err != nil {
 		log.Infof("Delete err: %+v", err)

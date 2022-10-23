@@ -1,0 +1,26 @@
+{
+  "desiredResourceState": {
+    "Name": "test-proj-for-cfn",
+    "ApiKeys": {
+      "PublicKey": "",
+      "PrivateKey": ""
+    },
+    "ProjectId": "",
+    "MongoDBMajorVersion": "4.4",
+    "NumShards": "1",
+    "AutoScaling": {
+      "DiskGBEnabled": "true",
+      "Compute": {}
+    },
+    "ProviderSettings": {
+      "AutoScaling": {
+        "Compute": {}
+      },
+      "InstanceSizeName": "M10",
+      "RegionName": "us-east-1"
+    },
+    "VersionReleaseSystem": "LTS"
+  },
+  "providerLogGroupName": "mongodb-atlas-project-logs",
+  "previousResourceState": {}
+}

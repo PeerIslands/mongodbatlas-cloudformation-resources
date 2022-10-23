@@ -266,6 +266,10 @@
         "StateName": {
             "description": "Current state of the cluster.",
             "type": "string"
+        },
+        "VersionReleaseSystem": {
+            "description": "Method by which the cluster maintains the MongoDB versions.",
+            "type": "string"
         }
     },
     "additionalProperties": false,
