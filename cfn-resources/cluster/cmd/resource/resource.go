@@ -21,7 +21,6 @@ import (
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-cluster")
-
 }
 
 func castNO64(i *int64) *int {
