@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/cluster/cmd/validation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"github.com/openlyinc/pointy"
@@ -33,14 +32,10 @@ func cast64(i *int) *int64 {
 	x := cast.ToInt64(&i)
 	return &x
 }
-func castInt(i *int) *int {
-	x := cast.ToInt(&i)
-	return &x
-}
 
 // validateModel inputs based on the method
-func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
-	return validator.ValidateModel(event, validation.ModelValidator{}, model)
+func validateModel(fields []string, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(fields, model)
 }
 
 // Create handles the Create event from the Cloudformation service.
@@ -48,7 +43,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	setup()
 	log.Debugf("Create() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(constants.Create, currentModel)
+	modelValidation := validateModel([]string{}, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
@@ -140,10 +135,6 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		clusterRequest.ReplicationSpecs = expandReplicationSpecs(currentModel.ReplicationSpecs)
 	}
 
-	if currentModel.VersionReleaseSystem != nil {
-		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
-	}
-
 	if currentModel.PitEnabled != nil {
 		clusterRequest.PitEnabled = currentModel.PitEnabled
 	}
@@ -184,7 +175,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	setup()
 	log.Debugf("Read() currentModel:%+v", currentModel)
 
-	modelValidation := validateModel(constants.Read, currentModel)
+	modelValidation := validateModel([]string{}, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
 	}
