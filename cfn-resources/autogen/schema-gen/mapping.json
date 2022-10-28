@@ -1,0 +1,12 @@
+{
+  "resources" : [
+    {
+      "typeName" :"indexes",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes/{databaseName}/{collectionName}",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes/{indexId}"
+        ]
+    }
+    ]
+}

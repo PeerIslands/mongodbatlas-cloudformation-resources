@@ -2,7 +2,6 @@ package validator_test
 
 import (
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	"testing"
 )
 
