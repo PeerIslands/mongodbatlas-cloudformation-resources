@@ -1,12 +1,19 @@
 {
-    "TPSCode": "...",
-    "Title": "...",
-    "CoverSheetIncluded": "...",
-    "DueDate": "...",
-    "ApprovalDate": "...",
-    "Memo": "...",
-    "SecondCopyOfMemo": "...",
-    "TestCode": "...",
-    "Authors": "...",
-    "Tags": "..."
+    "GroupId": "633caf3e2107044a22c9ad65",
+    "Actions": [
+        {
+            "Action": "FIND",
+            "Resources": [
+                {
+                    "Collection": "listingsAndReviews",
+                    "DB": "sample_airbnb"
+                }
+            ]
+        }
+    ],
+    "RoleName": "testcreate",
+    "ApiKeys": {
+        "PublicKey": "umjdyplc",
+        "PrivateKey": "174032b4-e8d0-4fbb-b470-509fce01b8b9"
+    }
 }

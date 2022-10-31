@@ -6,9 +6,9 @@ package resource
 type Model struct {
 	ApiKeys              *ApiKeyDefinition `json:",omitempty"`
 	AutoDeferOnceEnabled *bool             `json:",omitempty"`
-	DayOfWeek            *float64          `json:",omitempty"`
+	DayOfWeek            *int              `json:",omitempty"`
 	GroupId              *string           `json:",omitempty"`
-	HourOfDay            *float64          `json:",omitempty"`
+	HourOfDay            *int              `json:",omitempty"`
 	StartASAP            *bool             `json:",omitempty"`
 }
 
