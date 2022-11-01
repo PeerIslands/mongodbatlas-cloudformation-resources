@@ -1,0 +1,29 @@
+{
+      "ApiKeys": {
+        "PublicKey": "pzovkttc",
+        "PrivateKey": "6d39c229-6a6f-423d-9b41-dda35547f57e"
+      },
+      "Name": "cfn-adv-cluster6",
+      "ProjectId": "625454459c4e6108393d650d",
+      "ClusterType": "REPLICASET",
+      "NumShards": "1",
+      "ReplicationSpecs": [
+        {
+          "RegionsConfig": [
+            {
+              "AnalyticsSpecs": {
+                "InstanceSize": "M10",
+                "NodeCount": 1
+              },
+              "ElectableSpecs": {
+                "InstanceSize": "M10",
+                "NodeCount": 3
+              },
+              "Priority": 7,
+              "ProviderName": "AWS",
+              "RegionName": "US_EAST_1"
+            }
+          ]
+        }
+      ]
+}

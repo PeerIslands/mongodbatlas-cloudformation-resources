@@ -1,4 +1,4 @@
-# MongoDB::Atlas::Cluster replicationSpec
+# MongoDB::Atlas::Cluster specs
 
 ## Syntax
 
@@ -8,34 +8,25 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#id" title="ID">ID</a>" : <i>String</i>,
-    "<a href="#numshards" title="NumShards">NumShards</a>" : <i>Integer</i>,
-    "<a href="#regionsconfig" title="RegionsConfig">RegionsConfig</a>" : <i>[ <a href="regionconfig.md">RegionConfig</a>, ... ]</i>,
-    "<a href="#zonename" title="ZoneName">ZoneName</a>" : <i>String</i>
+    "<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>" : <i>Integer</i>,
+    "<a href="#ebsvolumetype" title="EbsVolumeType">EbsVolumeType</a>" : <i>String</i>,
+    "<a href="#instancesize" title="InstanceSize">InstanceSize</a>" : <i>String</i>,
+    "<a href="#nodecount" title="NodeCount">NodeCount</a>" : <i>Integer</i>
 }
 </pre>
 
 ### YAML
 
 <pre>
-<a href="#id" title="ID">ID</a>: <i>String</i>
-<a href="#numshards" title="NumShards">NumShards</a>: <i>Integer</i>
-<a href="#regionsconfig" title="RegionsConfig">RegionsConfig</a>: <i>
-      - <a href="regionconfig.md">RegionConfig</a></i>
-<a href="#zonename" title="ZoneName">ZoneName</a>: <i>String</i>
+<a href="#diskiops" title="DiskIOPS">DiskIOPS</a>: <i>Integer</i>
+<a href="#ebsvolumetype" title="EbsVolumeType">EbsVolumeType</a>: <i>String</i>
+<a href="#instancesize" title="InstanceSize">InstanceSize</a>: <i>String</i>
+<a href="#nodecount" title="NodeCount">NodeCount</a>: <i>Integer</i>
 </pre>
 
 ## Properties
 
-#### ID
-
-_Required_: No
-
-_Type_: String
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### NumShards
+#### DiskIOPS
 
 _Required_: No
 
@@ -43,19 +34,27 @@ _Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### RegionsConfig
-
-_Required_: No
-
-_Type_: List of <a href="regionconfig.md">RegionConfig</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### ZoneName
+#### EbsVolumeType
 
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### InstanceSize
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### NodeCount
+
+_Required_: No
+
+_Type_: Integer
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
