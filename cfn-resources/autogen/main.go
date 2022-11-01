@@ -23,6 +23,7 @@ const (
 	ListMethod       = "List"
 	DeleteMethod     = "Delete"
 	validationMethod = "validateModel"
+	setupMethod      = "setup"
 
 	createReqFields = "CreateRequiredFields"
 	readReqFields   = "ReadRequiredFields"
@@ -84,6 +85,13 @@ func addResource(path, resourceName, schemaName string) {
 		}
 	}
 
+	//Add setup method
+	f.Func().Id(setupMethod).Params().
+		Block(
+			Qual(util, "SetupLogger").Call(Lit("mongodb-atlas-" + schemaName)),
+		)
+	f.Line()
+
 	//Add handlers
 	for _, fn := range funcNames {
 		inputParameters, modelObj := generateInputParams(fn, reqFields)
@@ -91,7 +99,7 @@ func addResource(path, resourceName, schemaName string) {
 			inputParameters = "Considerable params from currentModel: \n" + inputParameters
 		}
 
-		atlasFunc := " res , resModel, err := client." + schemaName + "." + fn + "(context.Background(),&mongodbatlas." + capitalize(schemaName) + "{\n" + modelObj + "})"
+		atlasFunc := " res , resModel, err := client." + capitalize(schemaName) + "." + fn + "(context.Background(),&mongodbatlas." + capitalize(schemaName) + "{\n" + modelObj + "})"
 
 		f.Func().Id(fn).Params(
 			//Input Parameters
@@ -102,11 +110,17 @@ func addResource(path, resourceName, schemaName string) {
 			Id("(").Qual(handler, "ProgressEvent").Id(",").Id("error").Id(")").
 
 			// Function starts
-			Block(Qual(log, "Debugf").Params(Lit(fn+"() currentModel:%+v"), Id("currentModel")),
+			Block(
+				//log setup()
+				Id("setup").Params(),
 				Line(),
+				//Debug log
+				Qual(log, "Debugf").Params(Lit(fn+"() currentModel:%+v"), Id("currentModel")),
+				Line(),
+
 				//Validator
 				Comment("Validation"),
-				Id("modelValidation").Id(":=").Id(validationMethod).Call(Id(createReqFields), Id("currentModel")),
+				Id("modelValidation").Id(":=").Id(validationMethod).Call(Id(fn+"RequiredFields"), Id("currentModel")),
 				If(Id("modelValidation").Op("!=").Id("nil")).Block(
 					Return(
 						Id("*modelValidation"),
@@ -136,7 +150,7 @@ func addResource(path, resourceName, schemaName string) {
 					),
 				),
 
-				Id("var").Id(res).Qual(atlas, "Response"),
+				Id("var").Id(res).Id("*").Qual(atlas, "Response"),
 				Line(),
 
 				//Pseudocode
@@ -162,13 +176,12 @@ func addResource(path, resourceName, schemaName string) {
 				Line(),
 				//Progress Event Response
 				Comment("Response"),
-				Id("event").Op(":=").Qual(handler, "ProgressEvent").
-					Values(Dict{
-						Id("OperationStatus"): Qual(handler, "InProgress"),
-						Id("ResourceModel"):   Id("currentModel"),
-					}),
 				//Return statement
-				Return(List(Id("event"), Id("nil"))),
+				Return(List(Qual(handler, "ProgressEvent").
+					Values(Dict{
+						Id("OperationStatus"): Qual(handler, "Success"),
+						Id("ResourceModel"):   Id("currentModel"),
+					}), Id("nil"))),
 			)
 		f.Line()
 	}
@@ -234,14 +247,15 @@ func addValidator(f *File, reqFields RequiredParams) (*File, error) {
 		}
 
 	}
-
+	f.Line()
 	//Add validation Method
 	f.Func().Id(validationMethod).Params(
 		//Input params
-		Id("fields").Id("[]string"), Id("model").Id("*Model")).Id("*").Qual(handler, "ProgressEvent").
+		Id("fields").Id("[]string"), Id("model").Id("*Model")).Id("*handler.ProgressEvent").
 		Block(
 			Return(Qual(validator, "ValidateModel").Call(Id("fields"), Id("model"))),
 		)
+	f.Line()
 	return f, nil
 }
 
