@@ -1,4 +1,4 @@
-# MongoDB::Atlas::Cluster analyticsAutoScaling
+# MongoDB::Atlas::Cluster advancedAutoScaling
 
 ## Syntax
 

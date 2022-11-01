@@ -13,10 +13,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "Type" : "MongoDB::Atlas::Cluster",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
-        "<a href="#analyticsautoscaling" title="AnalyticsAutoScaling">AnalyticsAutoScaling</a>" : <i><a href="analyticsautoscaling.md">analyticsAutoScaling</a></i>,
         "<a href="#backupenabled" title="BackupEnabled">BackupEnabled</a>" : <i>Boolean</i>,
         "<a href="#biconnector" title="BiConnector">BiConnector</a>" : <i><a href="biconnector.md">BiConnector</a></i>,
         "<a href="#clustertype" title="ClusterType">ClusterType</a>" : <i>String</i>,
+        "<a href="#createddate" title="CreatedDate">CreatedDate</a>" : <i>String</i>,
         "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="connectionstrings.md">connectionStrings</a></i>,
         "<a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>" : <i>Double</i>,
         "<a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>" : <i>String</i>,
@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#pitenabled" title="PitEnabled">PitEnabled</a>" : <i>Boolean</i>,
         "<a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>" : <i>Boolean</i>,
         "<a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>" : <i>Integer</i>,
-        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="replicationspec.md">replicationSpec</a>, ... ]</i>,
+        "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="advancedreplicationspec.md">advancedReplicationSpec</a>, ... ]</i>,
         "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
         "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>,
         "<a href="#advancedsettings" title="AdvancedSettings">AdvancedSettings</a>" : <i><a href="processargs.md">processArgs</a></i>
@@ -42,10 +42,10 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 Type: MongoDB::Atlas::Cluster
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
-    <a href="#analyticsautoscaling" title="AnalyticsAutoScaling">AnalyticsAutoScaling</a>: <i><a href="analyticsautoscaling.md">analyticsAutoScaling</a></i>
     <a href="#backupenabled" title="BackupEnabled">BackupEnabled</a>: <i>Boolean</i>
     <a href="#biconnector" title="BiConnector">BiConnector</a>: <i><a href="biconnector.md">BiConnector</a></i>
     <a href="#clustertype" title="ClusterType">ClusterType</a>: <i>String</i>
+    <a href="#createddate" title="CreatedDate">CreatedDate</a>: <i>String</i>
     <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="connectionstrings.md">connectionStrings</a></i>
     <a href="#disksizegb" title="DiskSizeGB">DiskSizeGB</a>: <i>Double</i>
     <a href="#encryptionatrestprovider" title="EncryptionAtRestProvider">EncryptionAtRestProvider</a>: <i>String</i>
@@ -60,7 +60,7 @@ Properties:
     <a href="#providerbackupenabled" title="ProviderBackupEnabled">ProviderBackupEnabled</a>: <i>Boolean</i>
     <a href="#replicationfactor" title="ReplicationFactor">ReplicationFactor</a>: <i>Integer</i>
     <a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>: <i>
-      - <a href="replicationspec.md">replicationSpec</a></i>
+      - <a href="advancedreplicationspec.md">advancedReplicationSpec</a></i>
     <a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>: <i>String</i>
     <a href="#rootcerttype" title="RootCertType">RootCertType</a>: <i>String</i>
     <a href="#advancedsettings" title="AdvancedSettings">AdvancedSettings</a>: <i><a href="processargs.md">processArgs</a></i>
@@ -73,14 +73,6 @@ Properties:
 _Required_: No
 
 _Type_: <a href="apikeydefinition.md">apiKeyDefinition</a>
-
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
-
-#### AnalyticsAutoScaling
-
-_Required_: No
-
-_Type_: <a href="analyticsautoscaling.md">analyticsAutoScaling</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -105,6 +97,16 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 #### ClusterType
 
 Type of the cluster that you want to create.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### CreatedDate
+
+Cluster created date.
 
 _Required_: No
 
@@ -228,7 +230,7 @@ Configuration for cluster regions.
 
 _Required_: No
 
-_Type_: List of <a href="replicationspec.md">replicationSpec</a>
+_Type_: List of <a href="advancedreplicationspec.md">advancedReplicationSpec</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
@@ -306,7 +308,7 @@ Flag that indicates whether the cluster is paused or not.
 
 #### MongoDBVersion
 
-Returns the <code>MongoDBVersion</code> value.
+Version of the cluster to deploy.
 
 #### MongoURI
 

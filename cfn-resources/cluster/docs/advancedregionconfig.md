@@ -1,4 +1,4 @@
-# MongoDB::Atlas::Cluster RegionConfig
+# MongoDB::Atlas::Cluster AdvancedRegionConfig
 
 ## Syntax
 
@@ -8,7 +8,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "<a href="#autoscaling" title="AutoScaling">AutoScaling</a>" : <i><a href="analyticsautoscaling.md">analyticsAutoScaling</a></i>,
+    "<a href="#autoscaling" title="AutoScaling">AutoScaling</a>" : <i><a href="advancedautoscaling.md">advancedAutoScaling</a></i>,
     "<a href="#regionname" title="RegionName">RegionName</a>" : <i>String</i>,
     "<a href="#analyticsspecs" title="AnalyticsSpecs">AnalyticsSpecs</a>" : <i><a href="specs.md">specs</a></i>,
     "<a href="#electablespecs" title="ElectableSpecs">ElectableSpecs</a>" : <i><a href="specs.md">specs</a></i>,
@@ -20,7 +20,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-<a href="#autoscaling" title="AutoScaling">AutoScaling</a>: <i><a href="analyticsautoscaling.md">analyticsAutoScaling</a></i>
+<a href="#autoscaling" title="AutoScaling">AutoScaling</a>: <i><a href="advancedautoscaling.md">advancedAutoScaling</a></i>
 <a href="#regionname" title="RegionName">RegionName</a>: <i>String</i>
 <a href="#analyticsspecs" title="AnalyticsSpecs">AnalyticsSpecs</a>: <i><a href="specs.md">specs</a></i>
 <a href="#electablespecs" title="ElectableSpecs">ElectableSpecs</a>: <i><a href="specs.md">specs</a></i>
@@ -34,7 +34,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 _Required_: No
 
-_Type_: <a href="analyticsautoscaling.md">analyticsAutoScaling</a>
+_Type_: <a href="advancedautoscaling.md">advancedAutoScaling</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
