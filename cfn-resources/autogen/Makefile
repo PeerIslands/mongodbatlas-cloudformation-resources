@@ -16,12 +16,12 @@ ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultL
 
 create:
 	cd .. && \
-	mkdir $(resource) && cp autogen/configs/mongodb-atlas-$(schemaName).json $(resource)/mongodb-atlas-$(schemaName).json && \
-	cd $(resource) && \
- 	cfn init -t Mongodb::Atlas::$(schemaName) -a r && cfn generate
+	mkdir $(dirName) && cp autogen/configs/mongodb-atlas-$(resourceName).json $(dirName)/mongodb-atlas-$(resourceName).json && \
+	cd $(dirName) && \
+ 	cfn init -t Mongodb::Atlas::$(resourceName) -a r && cfn generate
 	cd ../autogen && \
-	go run main.go -res ../$(resource) -schemaName $(schemaName)
-	cd ../$(resource) && rm go.mod
+	go run main.go -res ../$(dirName) -schemaName $(resourceName)
+	cd ../$(dirName) && rm go.mod
 
 
 schema:

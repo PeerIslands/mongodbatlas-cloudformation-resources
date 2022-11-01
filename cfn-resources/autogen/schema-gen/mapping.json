@@ -1,11 +1,11 @@
 {
   "resources" : [
     {
-      "typeName" :"indexes",
+      "typeName" :"cloudProviderAccess",
       "openApiPath" : [
-        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes",
-        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes/{databaseName}/{collectionName}",
-        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes/{indexId}"
+        "/api/atlas/v1.0/groups/{groupId}/cloudProviderAccess",
+        "/api/atlas/v1.0/groups/{groupId}/cloudProviderAccess/{cloudProvider}/{roleId}",
+        "/api/atlas/v1.0/groups/{groupId}/cloudProviderAccess/{roleId}"
         ]
     }
     ]
