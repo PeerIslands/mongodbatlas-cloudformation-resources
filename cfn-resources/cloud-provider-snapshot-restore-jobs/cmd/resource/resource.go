@@ -143,6 +143,9 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			ResourceModel:   currentModel,
 		}, nil
 	}
+
+	/*TODO: check if its off*/
+
 	_, err = client.CloudProviderSnapshotRestoreJobs.Delete(context.Background(), snapshotRequest)
 	if err != nil {
 		return handler.ProgressEvent{}, fmt.Errorf("error deleting cloud provider snapshot restore job with id(project: %s, job: %s): %s", projectId, jobId, err)

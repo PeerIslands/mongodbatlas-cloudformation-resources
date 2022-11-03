@@ -1,0 +1,218 @@
+package resource
+
+import (
+	"context"
+	"errors"
+	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
+	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/auditing/cmd/validation"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
+	log "github.com/sirupsen/logrus"
+	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
+)
+
+func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
+	return validator.ValidateModel(event, validation.ModelValidator{}, model)
+}
+
+func setup() {
+	util.SetupLogger("mongodb-atlas-Auditing")
+}
+
+func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	log.Debugf("Create() currentModel:%+v", currentModel)
+
+	// Validation
+	modelValidation := validateModel(constants.Create, currentModel)
+	if modelValidation != nil {
+		log.Debugf("Validation Error")
+		return *modelValidation, nil
+	}
+
+	// Create atlas client
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+	var res *mongodbatlas.Response
+
+	enabled := true
+
+	auditingInput := mongodbatlas.Auditing{
+		AuditAuthorizationSuccess: currentModel.AuditAuthorizationSuccess,
+		AuditFilter:               *currentModel.AuditFilter,
+		Enabled:                   &enabled,
+	}
+
+	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	log.Debugf("Read() currentModel:%+v", currentModel)
+
+	// Validation
+	modelValidation := validateModel(constants.Read, currentModel)
+	if modelValidation != nil {
+		log.Debugf("Validation Error")
+		return *modelValidation, nil
+	}
+
+	// Create atlas client
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		log.Debugf("Read - error: %+v", err)
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+	var res *mongodbatlas.Response
+
+	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
+
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "get successful",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	log.Debugf("Update() currentModel:%+v", currentModel)
+
+	// Validation
+	modelValidation := validateModel(constants.Update, currentModel)
+	if modelValidation != nil {
+		log.Debugf("Validation Error")
+		return *modelValidation, nil
+	}
+
+	// Create atlas client
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		log.Debugf("Update - error: %+v", err)
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+	var res *mongodbatlas.Response
+
+	auditingInput := mongodbatlas.Auditing{
+		AuditAuthorizationSuccess: currentModel.AuditAuthorizationSuccess,
+		AuditFilter:               *currentModel.AuditFilter,
+	}
+
+	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if err != nil {
+		log.Debugf("Update - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+	log.Debugf("Atlas Client %v", client)
+
+	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
+
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		Message:         "Get success",
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	setup()
+
+	log.Debugf("Delete() currentModel:%+v", currentModel)
+
+	// Validation
+	modelValidation := validateModel(constants.Delete, currentModel)
+	if modelValidation != nil {
+		log.Debugf("Validation Error")
+		return *modelValidation, nil
+	}
+
+	// Create atlas client
+	client, err := util.CreateMongoDBClient(*currentModel.ApiKeys.PublicKey, *currentModel.ApiKeys.PrivateKey)
+	if err != nil {
+		log.Debugf("Delete - error: %+v", err)
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeInvalidRequest,
+			Message:          err.Error(),
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+	var res *mongodbatlas.Response
+
+	enabled := false
+
+	auditingInput := mongodbatlas.Auditing{
+		Enabled: &enabled,
+	}
+
+	_, res, err = client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if err != nil {
+		log.Debugf("Delete - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+	log.Debugf("Atlas Client %v", client)
+
+	// Response
+	return handler.ProgressEvent{
+		OperationStatus: handler.Success,
+		ResourceModel:   currentModel,
+	}, nil
+}
+
+func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	return handler.ProgressEvent{}, errors.New("Not implemented: List")
+}
