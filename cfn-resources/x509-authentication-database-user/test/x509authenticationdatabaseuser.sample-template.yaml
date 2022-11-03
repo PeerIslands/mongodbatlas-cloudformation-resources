@@ -1,0 +1,47 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: MongoDB Atlas AWS CloudFormation Quickstart for MongoDB::Atlas::X509AuthenticationDatabaseUser
+Parameters:
+  PublicKey:
+    Description: "Your MongoDB Cloud Public API Key"
+    Type: String
+    Default: ""
+  PrivateKey:
+    Description: "Your MongoDB Cloud Private API Key"
+    Type: String
+    Default: ""
+  CustomerX509:
+    Type: String
+    Description: ""
+    Default: ""
+  MonthsUntilExpiration:
+    Type: Integer
+    Description: ""
+    Default: 0
+  ProjectId:
+    Description: "Your MongoDB Cloud ProjectId"
+    Type: String
+    Default: ""
+  UserName:
+    Description: "Th Database user name"
+    Type: String
+    Default: ""
+Resources:
+  X509AuthenticationDatabaseUser:
+    Type: MongoDB::Atlas::X509AuthenticationDatabaseUser
+    Properties:
+      ApiKeys:
+        PublicKey: !Ref "PublicKey"
+        PrivateKey: !Ref "PrivateKey"
+      ProjectId: !Ref "OrgProjectId"
+      MonthsUntilExpiration: !Ref "MonthsUntilExpiration"
+      CustomerX509:
+        Cas: !Ref "CustomerX509"
+      UserName: !Ref "UserName"
+Outputs:
+  X509AuthenticationDatabaseUser:
+    Description: "Info on your Atlas Projet"
+    Value: !Ref X509AuthenticationDatabaseUser
+    Export:
+      Name: !Join [ "-", [ !Ref "AWS::StackName","X509AuthenticationDatabaseUser" ] ]
+
