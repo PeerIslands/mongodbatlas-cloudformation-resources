@@ -56,6 +56,6 @@
     }
   },
   "readOnlyProperties": ["/properties/ConfigurationType"],
-  "typeName": "MongoDB::Atlas::auditing",
+  "typeName": "MongoDB::Atlas::Auditing",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git"
 }

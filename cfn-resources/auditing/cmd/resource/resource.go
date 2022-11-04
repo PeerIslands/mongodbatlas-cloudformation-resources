@@ -148,6 +148,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
 			OperationStatus:  handler.Failed,
+			Message:          "resource not found",
 		}, nil
 	}
 
@@ -243,7 +244,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}, nil
 }
 
-func isEnabled(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent, ) {
+func isEnabled(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent) {
 	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
 
 	if err != nil {
