@@ -1,21 +1,70 @@
 {
     "desiredResourceState" : {
-        "resourceType" : "MongoDB::Atlas::Cluster",
-        "properties" : {
-          "ApiKeys": {
-            "PublicKey": "<ATLAS_PUBLIC_KEY>",
-            "PrivateKey": "<ATLAS_PRIVATE_KEY>"
-          },
-          "Name": "Clusters-Thurs-3",
-          "ProjectId": "<ATLAS_PROJECT_NAME>",
-          "MongoDBMajorVersion": "4.4",
+      "ApiKeys": {
+        "PublicKey": "pzovkttc",
+        "PrivateKey": "6d39c229-6a6f-423d-9b41-dda35547f57e"
+      },
+      "Name": "test-proj-for-cfn-9",
+      "ProjectId": "625454459c4e6108393d650d",
+      "AdvancedSettings": {
+        "DefaultReadConcern": "available",
+        "DefaultWriteConcern": "1",
+        "JavascriptEnabled": "true",
+        "MinimumEnabledTLSProtocol": "TLS1_2",
+        "NoTableScan": "false",
+        "OplogSizeMB": "4000",
+        "SampleSizeBIConnector": "110",
+        "SampleRefreshIntervalBIConnector": "310"
+      },
+      "BackupEnabled": "true",
+      "ClusterType": "REPLICASET",
+      "Paused": "false",
+      "PitEnabled": "false",
+      "BiConnector": {
+        "ReadPreference": "secondary",
+        "Enabled": "false"
+      },
+      "Id": "mongodb+cdi3fvlt04ss76i2q63g+Cluster+test-proj-for-cfn-9+Project+625454459c4e6108393d650d",
+      "ReplicationSpecs": [
+        {
           "NumShards": "1",
-          "ProviderSettings": {
-            "InstanceSizeName": "M10",
-            "RegionName": "us-east-1"
-          }
+          "AdvancedRegionConfigs": [
+            {
+              "AutoScaling": {
+                "DiskGB": {
+                  "Enabled": "true"
+                },
+                "Compute": {
+                  "Enabled": "false",
+                  "ScaleDownEnabled": "false"
+                }
+              },
+              "AnalyticsSpecs": {
+                "DiskIOPS": "3000",
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M20",
+                "NodeCount": "1"
+              },
+              "ElectableSpecs": {
+                "DiskIOPS": "3000",
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M10",
+                "NodeCount": "3"
+              },
+              "ReadOnlySpecs": {
+                "DiskIOPS": "3000",
+                "EbsVolumeType": "STANDARD",
+                "InstanceSize": "M10",
+                "NodeCount": "1"
+              },
+              "Priority": "7",
+              "RegionName": "US_EAST_1"
+            }
+          ]
         }
-    },
+      ]
+    }
+,
     "providerLogGroupName" : "mongodb-atlas-cluster-logs",
     "previousResourceState": { }
 }

@@ -20,9 +20,15 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-projectName="${1}"
-projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
-echo "Created project \"${projectName}\" with id: ${projectId}"
+projectName="test-proj-for-cfn"
+projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
+if [ -z "$projectId" ]; then
+    projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
+
+    echo -e "Created project \"${projectName}\" with id: ${projectId}\n"
+else
+    echo -e "FOUND project \"${projectName}\" with id: ${projectId}\n"
+fi
 
 clusterName="${projectName}"
 

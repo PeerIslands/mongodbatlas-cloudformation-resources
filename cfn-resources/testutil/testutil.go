@@ -90,7 +90,7 @@ func Test(t TestT, ts TestCase) {
 		log.Printf("[DEBUG] Test: Executing step %d", i)
 		if model == nil {
 			data = []byte(test.Config)
-			req := handler.NewRequest("id", map[string]interface{}{}, &session.Session{}, nil, data)
+			req := handler.NewRequest("id", map[string]interface{}{}, handler.RequestContext{}, &session.Session{}, nil, data)
 			switch test.Operation {
 
 			case CreateOp:
@@ -113,7 +113,7 @@ func Test(t TestT, ts TestCase) {
 					return
 				}
 				// Force default read op below to use update data
-				req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
+				req = handler.NewRequest("id", h.CallbackContext, handler.RequestContext{}, &session.Session{}, nil, dataRead)
 				hRead := ts.TestHandler.Read(req)
 				if hRead.OperationStatus != handler.Success {
 					t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
@@ -145,7 +145,7 @@ func Test(t TestT, ts TestCase) {
 					return
 				}
 				// Force default read op below to use update data
-				req = handler.NewRequest("id", h.CallbackContext, &session.Session{}, nil, dataRead)
+				req = handler.NewRequest("id", h.CallbackContext, handler.RequestContext{}, &session.Session{}, nil, dataRead)
 				hRead := ts.TestHandler.Read(req)
 				if hRead.OperationStatus != handler.Success {
 					t.Error(fmt.Sprintf("Error Performing READ Request %s: %s", err, h.Message))
@@ -231,8 +231,7 @@ func waitForSuccess(h handler.ProgressEvent, op Operation) (handler.ProgressEven
 		if err != nil {
 			return h, err
 		}
-		ctx := h.CallbackContext
-		req := handler.NewRequest("id", ctx, &session.Session{}, nil, data)
+		req := handler.NewRequest("id", h.CallbackContext, handler.RequestContext{}, &session.Session{}, nil, data)
 		h = op(req)
 		if h.OperationStatus == handler.Failed {
 			return h, fmt.Errorf("Failed performing operation: %s", h.Message)

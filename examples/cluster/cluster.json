@@ -7,6 +7,161 @@
         },
         "ClusterName": {
             "Type": "String"
+        },
+        "DefaultReadConcern": {
+            "Type": "String",
+            "Default": "available"
+        },
+        "DefaultWriteConcern": {
+            "Type": "String",
+            "Default": ""
+        },
+        "FailIndexKeyTooLong": {
+            "Type": "String",
+            "Default": ""
+        },
+        "JavascriptEnabled": {
+            "Type": "String",
+            "Default": ""
+        },
+        "MinimumEnabledTLSProtocol": {
+            "Type": "String",
+            "Default": ""
+        },
+        "NoTableScan": {
+            "Type": "String",
+            "Default": ""
+        },
+        "OplogSizeMB": {
+            "Type": "String",
+            "Default": ""
+        },
+        "SampleSizeBIConnector": {
+            "Type": "String",
+            "Default": ""
+        },
+        "SampleRefreshIntervalBIConnector": {
+            "Type": "String",
+            "Default": ""
+        },
+        "BackupEnabled": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ClusterType": {
+            "Type": "String",
+            "Default": ""
+        },
+        "Paused": {
+            "Type": "String",
+            "Default": ""
+        },
+        "PitEnabled": {
+            "Type": "String",
+            "Default": ""
+        },
+        "BiConnectorReadPreference": {
+            "Type": "String",
+            "Default": ""
+        },
+        "BiConnectorEnabled": {
+            "Type": "String",
+            "Default": ""
+        },"AutoScalingDiskGB": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AutoScalingComputeEnabled": {
+            "Type": "String",
+            "Default": ""
+        },
+        "Priority": {
+            "Type": "String",
+            "Default": ""
+        },
+        "RegionName": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AutoScalingDiskGB": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ComputeEnabled": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ComputeScaleDownEnabled": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ComputeMinInstanceSize": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ComputeMaxInstanceSize": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AnalyticsDiskIOPS": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AnalyticsEbsVolumeType": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AnalyticsInstanceSize": {
+            "Type": "String",
+            "Default": ""
+        },
+        "AnalyticsNodeCount": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ElectableDiskIOPS": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ElectableEbsVolumeType": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ElectableInstanceSize": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ElectableNodeCount": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ReadOnlyDiskIOPS": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ReadOnlyEbsVolumeType": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ReadOnlyInstanceSize": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ReadOnlyNodeCount": {
+            "Type": "String",
+            "Default": ""
+        },
+        "Priority": {
+            "Type": "String",
+            "Default": ""
+        },
+        "NumShards": {
+            "Type": "String",
+            "Default": ""
+        },
+        "ZoneName": {
+            "Type": "String",
+            "Default": ""
         }
     },
     "Mappings": {},
@@ -27,29 +182,76 @@
         "Cluster": {
             "Type": "MongoDB::Atlas::Cluster",
             "Properties": {
+                "ApiKeys": {
+                    "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
+                    "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
+                },
                 "ProjectId": {
                     "Ref": "Project"
                 },
                 "Name": {
                     "Ref": "ClusterName"
                 },
-                "NumShards": 1,
-                "ProviderName": "AWS",
-                "ReplicationFactor": 3,
-                "ProviderBackupEnabled": false,
-                "AutoScaling": {
-                    "DiskGBEnabled": false
+                "AdvancedSettings": {
+                    "DefaultReadConcern": {"Ref": "DefaultReadConcern"},
+                    "DefaultWriteConcern":{"Ref": "DefaultWriteConcern"},
+                    "FailIndexKeyTooLong": {"Ref": "FailIndexKeyTooLong"},
+                    "JavascriptEnabled": {"Ref": "JavascriptEnabled"},
+                    "MinimumEnabledTLSProtocol":{"Ref": "MinimumEnabledTLSProtocol"},
+                    "NoTableScan":{"Ref": "NoTableScan"},
+                    "OplogSizeMB":{"Ref": "OplogSizeMB"},
+                    "SampleSizeBIConnector": {"Ref": "SampleSizeBIConnector"},
+                    "SampleRefreshIntervalBIConnector": {"Ref": "SampleRefreshIntervalBIConnector"}
                 },
-                "MongoDBVersion": "4.0",
-                "ProviderSettings": {
-                    "EncryptEBSVolume": false,
-                    "InstanceSizeName": "M10",
-                    "RegionName": "EU_CENTRAL_1"
+                "BackupEnabled": {"Ref": "BackupEnabled"},
+                "ClusterType": {"Ref": "ClusterType"},
+                "Paused": {"Ref": "Paused"},
+                "PitEnabled": {"Ref": "PitEnabled"},
+                "BiConnector": {
+                    "ReadPreference": {"Ref": "ReadPreference"},
+                    "Enabled": {"Ref": "Enabled"}
                 },
-                "ApiKeys": {
-                    "PublicKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPublicKey}}",
-                    "PrivateKey": "{{resolve:secretsmanager:mongodb/atlas/secrets:SecretString:AtlasMongoDBPrivateKey}}"
-                }
+                "Replication": [
+                    {
+                        "NumShards": {"Ref": "NumShards"},
+                        "ZoneName": {"Ref": "ZoneName"},
+                        "AdvancedRegionConfigs": [
+                            {
+                                "AutoScaling": {
+                                    "DiskGB": {
+                                        "Enabled": {  "Ref": "AutoScalingDiskGB"}
+                                    },
+                                    "Compute": {
+                                        "Enabled": {  "Ref": "AutoScalingComputeEnabled"},
+                                        "ScaleDownEnabled": {"Ref": "ComputeScaleDownEnabled"},
+                                        "MinInstanceSize": {"Ref": "ComputeMinInstanceSize"},
+                                        "MaxInstanceSize": {"Ref": "ComputeMaxInstanceSize"}
+                                    }
+                                },
+                                "AnalyticsSpecs": {
+                                    "DiskIOPS": {"Ref": "AnalyticsDiskIOPS"},
+                                    "EbsVolumeType": {"Ref": "AnalyticsEbsVolumeType"},
+                                    "InstanceSize": {"Ref": "AnalyticsInstanceSize"},
+                                    "NodeCount":{"Ref": "AnalyticsNodeCount"}
+                                },
+                                "ElectableSpecs": {
+                                    "DiskIOPS": {"Ref": "ElectableDiskIOPS"},
+                                    "EbsVolumeType": {"Ref": "ElectableEbsVolumeType"},
+                                    "InstanceSize": {"Ref": "ElectableInstanceSize"},
+                                    "NodeCount":{"Ref": "ElectableNodeCount"}
+                                },
+                                "ReadOnlySpecs": {
+                                    "DiskIOPS": {"Ref": "ReadOnlyDiskIOPS"},
+                                    "EbsVolumeType": {"Ref": "ReadOnlyEbsVolumeType"},
+                                    "InstanceSize": {"Ref": "ReadOnlyInstanceSize"},
+                                    "NodeCount":{"Ref": "ReadOnlyNodeCount"}
+                                },
+                                "Priority": {"Ref": "Priority"},
+                                "RegionName": {  "Ref": "RegionName"}
+                            }
+                        ]
+                    }
+                ]
             }
         }
     },
