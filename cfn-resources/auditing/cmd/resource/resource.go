@@ -19,13 +19,13 @@ func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
 }
 
 func setup() {
-	util.SetupLogger("mongodb-atlas-Auditing")
+	util.SetupLogger("mongodb-atlas-auditing")
 }
 
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Create() currentModel:%+v", currentModel)
+	log.Infof("Create() currentModel:%+v", currentModel)
 
 	// Validation
 	modelValidation := validateModel(constants.Create, currentModel)
@@ -95,10 +95,16 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	var res *mongodbatlas.Response
 
 	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
-
 	if err != nil {
 		log.Debugf("Create - error: %+v", err)
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if *atlasAuditing.Enabled == false {
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			OperationStatus:  handler.Failed,
+		}, nil
 	}
 
 	currentModel.ConfigurationType = &atlasAuditing.ConfigurationType
@@ -133,6 +139,18 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
+
+	resourceEnabled, handlerEvent := isEnabled(*client, *currentModel)
+	if handlerEvent != nil {
+		return *handlerEvent, nil
+	}
+	if !resourceEnabled {
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+
 	var res *mongodbatlas.Response
 
 	auditingInput := mongodbatlas.Auditing{
@@ -185,6 +203,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			OperationStatus:  handler.Failed,
 		}, nil
 	}
+
+	resourceEnabled, handlerEvent := isEnabled(*client, *currentModel)
+	if handlerEvent != nil {
+		return *handlerEvent, nil
+	}
+
+	if !resourceEnabled {
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+
 	var res *mongodbatlas.Response
 
 	enabled := false
@@ -209,8 +240,19 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		ResourceModel:   currentModel,
 	}, nil
+}
+
+func isEnabled(client mongodbatlas.Client, currentModel Model) (bool, *handler.ProgressEvent, ) {
+	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
+
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		er := progress_events.GetFailedEventByResponse(err.Error(), res.Response)
+		return false, &er
+	}
+
+	return *atlasAuditing.Enabled, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
