@@ -20,7 +20,9 @@ if [[ "$*" == help ]]; then usage; fi
 
 rm -rf inputs
 mkdir inputs
-projectName="test-proj-for-cfn"
+
+projectName="${1}"
+
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
     projectId=$(mongocli iam projects create "${projectName}" --output=json | jq -r '.id')
@@ -37,7 +39,7 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg region "us-east-1" \
    --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProviderSettings.RegionName?|=$region | .ProjectId?|=$projectId ' \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_create.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
@@ -45,15 +47,18 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg region "us-east-1" \
    --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProviderSettings.RegionName?|=$region | .ProjectId?|=$projectId ' \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_update.json" > "inputs/inputs_1_update.json"
+
+#SET INVALID NAME
+clusterName="^%LKJ)(*J_ {+_+O_)"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg region "us-east-1" \
    --arg clusterName "$clusterName" \
    --arg projectId "$projectId" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProviderSettings.RegionName?|=$region | .ProjectId?|=$projectId ' \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey |  .Name?|=$clusterName | .ProjectId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_invalid.json" > "inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

@@ -2,7 +2,7 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "This template creates a cluster on the MongoDB Atlas API, this will be billed to your Atlas account.",
     "Parameters": {
-        "ProjectName": {
+        "ProjectId": {
             "Type": "String"
         },
         "ClusterName": {
@@ -75,23 +75,7 @@
             "Type": "String",
             "Default": ""
         },
-        "Priority": {
-            "Type": "String",
-            "Default": ""
-        },
-        "RegionName": {
-            "Type": "String",
-            "Default": ""
-        },
-        "AutoScalingDiskGB": {
-            "Type": "String",
-            "Default": ""
-        },
-        "ComputeEnabled": {
-            "Type": "String",
-            "Default": ""
-        },
-        "ComputeScaleDownEnabled": {
+        "AutoScalingScaleDownEnabled": {
             "Type": "String",
             "Default": ""
         },
@@ -162,6 +146,10 @@
         "ZoneName": {
             "Type": "String",
             "Default": ""
+        },
+        "RegionName": {
+            "Type": "String",
+            "Default": ""
         }
     },
     "Mappings": {},
@@ -223,7 +211,7 @@
                                     },
                                     "Compute": {
                                         "Enabled": {  "Ref": "AutoScalingComputeEnabled"},
-                                        "ScaleDownEnabled": {"Ref": "ComputeScaleDownEnabled"},
+                                        "ScaleDownEnabled": {"Ref": "AutoScalingScaleDownEnabled"},
                                         "MinInstanceSize": {"Ref": "ComputeMinInstanceSize"},
                                         "MaxInstanceSize": {"Ref": "ComputeMaxInstanceSize"}
                                     }
