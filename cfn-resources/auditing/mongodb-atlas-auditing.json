@@ -30,6 +30,10 @@
     }
   },
   "primaryIdentifier": ["/properties/GroupId"],
+  "required": [
+    "ApiKeys",
+    "GroupId"
+  ],
   "properties": {
     "ApiKeys": {
       "$ref": "#/definitions/apiKeyDefinition"

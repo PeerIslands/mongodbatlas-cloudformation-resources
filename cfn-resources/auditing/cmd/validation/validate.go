@@ -4,7 +4,7 @@ type ModelValidator struct{}
 
 var CreateRequiredFields = []string{"GroupId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var ReadRequiredFields = []string{"GroupId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
-var UpdateRequiredFields = []string{"GroupId", "AuditAuthorizationSuccess", "AuditFilter", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
+var UpdateRequiredFields = []string{"GroupId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var DeleteRequiredFields = []string{"GroupId", "ApiKeys.PrivateKey", "ApiKeys.PublicKey"}
 var ListRequiredFields []string
 

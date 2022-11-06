@@ -25,7 +25,7 @@ func setup() {
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Infof("Create() currentModel:%+v", currentModel)
+	log.Infof("Create() currentModel:%+v", *currentModel.GroupId)
 
 	// Validation
 	modelValidation := validateModel(constants.Create, currentModel)
@@ -49,9 +49,15 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	enabled := true
 
 	auditingInput := mongodbatlas.Auditing{
-		AuditAuthorizationSuccess: currentModel.AuditAuthorizationSuccess,
-		AuditFilter:               *currentModel.AuditFilter,
-		Enabled:                   &enabled,
+		Enabled: &enabled,
+	}
+
+	if currentModel.AuditAuthorizationSuccess != nil {
+		auditingInput.AuditAuthorizationSuccess = currentModel.AuditAuthorizationSuccess
+	}
+
+	if currentModel.AuditFilter != nil {
+		auditingInput.AuditFilter = *currentModel.AuditFilter
 	}
 
 	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
@@ -73,7 +79,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Read() currentModel:%+v", currentModel)
+	log.Infof("Create() currentModel:%+v", *currentModel.GroupId)
 
 	// Validation
 	modelValidation := validateModel(constants.Read, currentModel)
@@ -120,7 +126,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Update() currentModel:%+v", currentModel)
+	log.Infof("Create() currentModel:%+v", *currentModel.GroupId)
 
 	// Validation
 	modelValidation := validateModel(constants.Update, currentModel)
@@ -154,9 +160,26 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	var res *mongodbatlas.Response
 
-	auditingInput := mongodbatlas.Auditing{
-		AuditAuthorizationSuccess: currentModel.AuditAuthorizationSuccess,
-		AuditFilter:               *currentModel.AuditFilter,
+	auditingInput := mongodbatlas.Auditing{}
+
+	modified := false
+
+	if currentModel.AuditAuthorizationSuccess != nil {
+		modified = true
+		auditingInput.AuditAuthorizationSuccess = currentModel.AuditAuthorizationSuccess
+	}
+
+	if currentModel.AuditFilter != nil {
+		modified = true
+		auditingInput.AuditFilter = *currentModel.AuditFilter
+	}
+
+	if !modified {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Update success (no properties were changed)",
+			ResourceModel:   currentModel,
+		}, nil
 	}
 
 	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
@@ -177,7 +200,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	// Response
 	return handler.ProgressEvent{
 		OperationStatus: handler.Success,
-		Message:         "Get success",
+		Message:         "Update success",
 		ResourceModel:   currentModel,
 	}, nil
 }
@@ -185,7 +208,7 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
 
-	log.Debugf("Delete() currentModel:%+v", currentModel)
+	log.Infof("Create() currentModel:%+v", *currentModel.GroupId)
 
 	// Validation
 	modelValidation := validateModel(constants.Delete, currentModel)

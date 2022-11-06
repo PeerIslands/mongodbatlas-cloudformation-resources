@@ -56,4 +56,22 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId ' \
    "$(dirname "$0")/inputs_1_invalid.json" > "inputs/inputs_1_invalid.json"
 
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+   --arg projectId "$projectId" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId ' \
+   "$(dirname "$0")/inputs_2_create.json" > "inputs/inputs_2_create.json"
+
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+   --arg projectId "$projectId" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId ' \
+   "$(dirname "$0")/inputs_2_update.json" > "inputs/inputs_2_update.json"
+
+jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
+   --arg pvtkey "$ATLAS_PRIVATE_KEY" \
+   --arg projectId "$projectId" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId ' \
+   "$(dirname "$0")/inputs_2_invalid.json" > "inputs/inputs_2_invalid.json"
+
 echo "mongocli iam projects delete ${projectId} --force"
