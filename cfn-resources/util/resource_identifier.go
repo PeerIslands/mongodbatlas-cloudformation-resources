@@ -22,7 +22,7 @@ type ResourceIdentifier struct {
 	Parent       *ResourceIdentifier
 }
 
-//Note string version is "+" delimited string of the fields, in proper heirachry
+// Note string version is "+" delimited string of the fields, in proper heirachry
 func (t ResourceIdentifier) String() string {
 	fields := []string{}
 	if t.DeploymentID != "" {

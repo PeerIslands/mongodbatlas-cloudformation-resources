@@ -89,7 +89,6 @@ func getMongoDBClientAWSAuth(mongodbURI string, req *handler.Request, roleToAssu
 This function will take an 'active' Atlas client connection
 and use it to run a db command. This works by creating a temporary
 db-user to connect to the cluster
-
 */
 func ListDatabaseNamesByClusterName(client *mongodbatlas.Client, req *handler.Request, projectID string, clusterName string, roleToAssumeArn string) ([]string, error) {
 	log.Printf("ListDatabaseNames projectID:%s, clusterName:%s", projectID, clusterName)

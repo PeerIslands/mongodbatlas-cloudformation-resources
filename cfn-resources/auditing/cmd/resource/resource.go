@@ -3,12 +3,13 @@ package resource
 import (
 	"context"
 	"errors"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/auditing/cmd/validation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/validator"
 	log "github.com/sirupsen/logrus"
 	mongodbatlas "go.mongodb.org/atlas/mongodbatlas"
