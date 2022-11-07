@@ -50,20 +50,32 @@
         "ApiKeys",
         "GroupId"
     ],
-    "primaryIdentifier":["/properties/GroupId"],
-    "createOnlyProperties":["/properties/GroupId"],
+    "primaryIdentifier":[
+        "/properties/GroupId"
+    ],
+    "createOnlyProperties":[
+        "/properties/GroupId"
+    ],
     "handlers":{
         "create":{
-            "permissions":[]
+            "permissions":[
+
+            ]
         },
         "read":{
-            "permissions":[]
+            "permissions":[
+
+            ]
         },
         "update":{
-            "permissions":[]
+            "permissions":[
+
+            ]
         },
         "delete":{
-            "permissions":[]
+            "permissions":[
+
+            ]
         }
     }
 }
