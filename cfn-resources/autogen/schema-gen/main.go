@@ -27,8 +27,8 @@ var optionalInputParams = []string{"envelope", "pretty", "apikeys", "app"}
 var optionalReqParams = []string{"app"}
 
 func main() {
-	dir := "/autogen/schema-gen"
-	//dir := "/schema-gen"
+	//dir := "/autogen/schema-gen"
+	dir := "/schema-gen"
 
 	path, err := os.Getwd()
 	if err != nil {
