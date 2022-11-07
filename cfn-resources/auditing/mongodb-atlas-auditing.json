@@ -1,6 +1,6 @@
 {
     "typeName":"MongoDB::Atlas::Auditing",
-    "description":"",
+    "description":"Returns and edits database auditing settings for MongoDB Cloud projects.",
     "sourceUrl":"https://github.com/aws-cloudformation/aws-cloudformation-rpdk.git",
     "definitions":{
         "apiKeyDefinition":{
