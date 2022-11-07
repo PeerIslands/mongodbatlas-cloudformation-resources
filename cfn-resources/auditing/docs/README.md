@@ -13,6 +13,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#auditauthorizationsuccess" title="AuditAuthorizationSuccess">AuditAuthorizationSuccess</a>" : <i>Boolean</i>,
         "<a href="#auditfilter" title="AuditFilter">AuditFilter</a>" : <i>String</i>,
+        "<a href="#configurationtype" title="ConfigurationType">ConfigurationType</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>
     }
 }
@@ -26,6 +27,7 @@ Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#auditauthorizationsuccess" title="AuditAuthorizationSuccess">AuditAuthorizationSuccess</a>: <i>Boolean</i>
     <a href="#auditfilter" title="AuditFilter">AuditFilter</a>: <i>String</i>
+    <a href="#configurationtype" title="ConfigurationType">ConfigurationType</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
 </pre>
 
@@ -59,6 +61,18 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
+#### ConfigurationType
+
+Human-readable label that displays how to configure the audit filter.
+
+_Required_: No
+
+_Type_: String
+
+_Allowed Values_: <code>FILTER_BUILDER</code> | <code>FILTER_JSON</code> | <code>NONE</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
 #### GroupId
 
 Unique 24-hexadecimal digit string that identifies your project.
@@ -73,21 +87,10 @@ _Maximum_: <code>24</code>
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
 
-_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 
 ## Return Values
 
 ### Ref
 
 When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the GroupId.
-
-### Fn::GetAtt
-
-The `Fn::GetAtt` intrinsic function returns a value for a specified attribute of this type. The following are the available attributes and sample return values.
-
-For more information about using the `Fn::GetAtt` intrinsic function, see [Fn::GetAtt](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getatt.html).
-
-#### ConfigurationType
-
-Human-readable label that displays how to configure the audit filter.
-

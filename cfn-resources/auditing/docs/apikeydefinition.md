@@ -1,4 +1,4 @@
-# Mongodb::Atlas::Auditing apiKeyDefinition
+# MongoDB::Atlas::Auditing apiKeyDefinition
 
 ## Syntax
 
