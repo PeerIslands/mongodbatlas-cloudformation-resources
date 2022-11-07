@@ -1,11 +1,10 @@
 {
   "resources" : [
     {
-      "typeName" :"cloudProviderAccess",
+      "typeName" :"integrations",
       "openApiPath" : [
-        "/api/atlas/v1.0/groups/{groupId}/cloudProviderAccess",
-        "/api/atlas/v1.0/groups/{groupId}/cloudProviderAccess/{cloudProvider}/{roleId}",
-        "/api/atlas/v1.0/groups/{groupId}/cloudProviderAccess/{roleId}"
+        "/api/{app}/v1.0/groups/{groupId}/integrations",
+        "/api/{app}/v1.0/groups/{groupId}/integrations/{integrationType}"
         ]
     }
     ]
