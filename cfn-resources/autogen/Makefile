@@ -7,7 +7,7 @@ goarch=amd64
 #export CGO_ENABLED
 #export GOARCH
 # Set next value at compile time for fallback log-level
-ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info
+ldXflags=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=warning
 ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug
 
 # example for resource: MongoDB::Atlas::Teams
@@ -15,14 +15,14 @@ ldXflagsD=github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultL
 # example for go path: github.com/mongodb/mongodbatlas-cloudformation-resources/indexes
 
 create:
+	echo "Enter the go import path as: github.com/mongodb/mongodbatlas-cloudformation-resources/$(dirName) "
 	cd .. && \
-	mkdir $(resource) && cp autogen/configs/mongodb-atlas-$(schemaName).json $(resource)/mongodb-atlas-$(schemaName).json && \
-	cd $(resource) && \
- 	cfn init -t Mongodb::Atlas::$(schemaName) -a r && cfn generate
+	mkdir $(dirName) && cp autogen/configs/mongodb-atlas-$(resourceName).json $(dirName)/mongodb-atlas-$(resourceName).json && \
+	cd $(dirName) && \
+	cfn init -t Mongodb::Atlas::$(resourceName) -a r && cfn generate
 	cd ../autogen && \
-	go run main.go -res ../$(resource) -schemaName $(schemaName)
-	cd ../$(resource) && rm go.mod
-
+	go run main.go -res ../$(dirName) -schemaName $(resourceName)
+	cd ../$(dirName) && rm go.mod
 
 schema:
 	cd schema-gen && go build
