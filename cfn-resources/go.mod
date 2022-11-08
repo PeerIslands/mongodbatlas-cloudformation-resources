@@ -42,4 +42,6 @@ require (
 	golang.org/x/sys v0.0.0-20190531175056-4c3a928424d2 // indirect
 	golang.org/x/text v0.3.5 // indirect
 	gopkg.in/validator.v2 v2.0.0-20191107172027-c3144fdedc21 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
