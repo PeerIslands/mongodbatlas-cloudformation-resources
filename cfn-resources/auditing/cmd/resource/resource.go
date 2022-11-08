@@ -107,7 +107,7 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
 	}
 
-	if *atlasAuditing.Enabled == false {
+	if !*atlasAuditing.Enabled {
 		return handler.ProgressEvent{
 			HandlerErrorCode: cloudformation.HandlerErrorCodeNotFound,
 			OperationStatus:  handler.Failed,
