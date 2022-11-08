@@ -1,0 +1,13 @@
+{
+  "resources" : [
+    {
+      "typeName" :"BackupSnapshot",
+      "openApiPath" : [
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots/shardedCluster/{snapshotId}",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots/shardedClusters",
+        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/snapshots/{snapshotId}"
+      ]
+    }
+  ]
+}
