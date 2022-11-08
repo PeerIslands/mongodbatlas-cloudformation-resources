@@ -300,9 +300,8 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 						allOf := doc.Components.Schemas[filepath.Base(schemaKey)].Value.AllOf
 						for i := range allOf {
 
-							reqSchm, defs := processSchema(schemaKey, allOf[i], doc.Components.Schemas)
+							defs := processDefinitionsSchema(schemaKey, allOf[i], doc.Components.Schemas)
 							definitions[schemaKey] = defs[schemaKey]
-							reqSchema[schemaKey] = reqSchm[schemaKey]
 							if contains(schemaKey, schemaKeys) {
 								continue
 							}
@@ -530,6 +529,20 @@ func processSchema(id string, v *openapi3.SchemaRef, schemas openapi3.Schemas) (
 	}
 
 	return properties, pDefinitions
+}
+
+func processDefinitionsSchema(id string, ref *openapi3.SchemaRef, schemas openapi3.Schemas) (definitions map[string]Definitions) {
+	var pDefinitions = make(map[string]Definitions, 0)
+	p, _ := processSchema(id, ref, schemas)
+	for _, v1 := range p {
+		pDefinitions[capitalize(id)] = Definitions{
+			Type:                 ref.Value.Type,
+			Properties:           v1,
+			AdditionalProperties: false,
+		}
+	}
+
+	return pDefinitions
 }
 
 func property(val *openapi3.SchemaRef) Property {

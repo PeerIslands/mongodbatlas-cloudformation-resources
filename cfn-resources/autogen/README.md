@@ -35,6 +35,6 @@ search-indexes is the directory name for resource to create
 indexes is the ResourceName that can be found in the end of the OpenAPI URL. 
     eg: /api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/fts/indexes 
     
-    make create resource=search-indexes schemaName=indexes
+    make create dirName=search-indexes resourceName=indexes
 
 
