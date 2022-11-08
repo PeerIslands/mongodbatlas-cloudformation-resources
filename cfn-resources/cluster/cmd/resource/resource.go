@@ -119,10 +119,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	// Atlas client
 	clusterRequest := &mongodbatlas.AdvancedCluster{
-		Name:                     cast.ToString(currentModel.Name),
-		EncryptionAtRestProvider: cast.ToString(currentModel.EncryptionAtRestProvider),
-		ClusterType:              cast.ToString(currentModel.ClusterType),
+		Name:                     *currentModel.Name,
+		EncryptionAtRestProvider: AWS,
 		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
+	}
+
+	if currentModel.EncryptionAtRestProvider != nil {
+		clusterRequest.EncryptionAtRestProvider = *currentModel.EncryptionAtRestProvider
+	}
+
+	if currentModel.ClusterType != nil {
+		clusterRequest.ClusterType = *currentModel.ClusterType
 	}
 
 	if currentModel.BackupEnabled != nil {
@@ -949,7 +956,7 @@ func updateCluster(ctx context.Context, client *mongodbatlas.Client, currentMode
 	}
 
 	if currentModel.EncryptionAtRestProvider != nil {
-		clusterRequest.EncryptionAtRestProvider = cast.ToString(currentModel.EncryptionAtRestProvider)
+		clusterRequest.EncryptionAtRestProvider = *currentModel.EncryptionAtRestProvider
 	}
 
 	if len(currentModel.Labels) > 0 {
