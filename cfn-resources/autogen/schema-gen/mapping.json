@@ -1,10 +1,10 @@
 {
   "resources" : [
     {
-      "typeName" :"CloudBackupSnapshotExportJob",
+      "typeName" :"LDAPVerify",
       "openApiPath" : [
-        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/exports",
-        "/api/atlas/v1.0/groups/{groupId}/clusters/{clusterName}/backup/exports/{exportId}"
+        "/api/atlas/v1.0/groups/{groupId}/userSecurity/ldap/verify",
+        "/api/atlas/v1.0/groups/{groupId}/userSecurity/ldap/verify/{requestId}"
       ]
     }
   ]
