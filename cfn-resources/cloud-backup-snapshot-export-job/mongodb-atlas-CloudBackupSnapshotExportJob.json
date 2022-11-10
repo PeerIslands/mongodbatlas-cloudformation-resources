@@ -86,7 +86,7 @@
     "read": {
       "permissions": []
     },
-    "update": {
+    "list": {
       "permissions": []
     },
     "delete": {
@@ -94,11 +94,8 @@
     }
   },
   "primaryIdentifier": [
-    "/properties/GroupId",
-    "/properties/SnapshotId",
-    "/properties/ExportId",
-    "/properties/ExportBucketId",
-    "/properties/Id"
+    "/properties/ExportId"
+
   ],
   "properties": {
     "ApiKeys": {
