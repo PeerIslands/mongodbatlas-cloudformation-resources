@@ -1,0 +1,17 @@
+{
+    "GroupId": "633bf97a5684466a4793c55c",
+    "ClusterName": "cfntest",
+    "ApiKeys": {
+        "PublicKey": "varwzorf",
+        "PrivateKey": "38df4de7-a96f-4b85-a214-5e0d82df27fa"
+    },
+    "SnapshotId": "636676f76f5c493e33a33035",
+    "ExportBucketId": "63661a54ea0a1b2a7ff331b9",
+    "ExportId": "63662668b0ad221f63aed1af",
+
+    "CustomData": [{
+        "Key": "hi",
+        "Value": "hi"
+    }]
+
+}
