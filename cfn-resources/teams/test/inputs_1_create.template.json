@@ -1,0 +1,13 @@
+{
+    "ApiKeys": {
+        "PrivateKey": "",
+        "PublicKey": ""
+    },
+    "RoleNames": [
+        "GROUP_CLUSTER_MANAGER"
+    ],
+    "OrgId": "",
+    "TeamId": "",
+    "Name": "",
+    "Usernames": ["r.dharmendran@gmail.com"]
+}

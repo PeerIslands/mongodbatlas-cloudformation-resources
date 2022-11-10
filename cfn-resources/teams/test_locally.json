@@ -1,0 +1,26 @@
+{
+  "desiredResourceState": {
+    "TeamId": "",
+    "OrgId": "6177d6c90e0c7f15f342a05d",
+    "Name": "ss",
+
+    "Usernames": ["r.dharmendran@gmail.com","dharmendran.rajendran@peerislands.io"],
+    "RoleNames":  [
+          "GROUP_CLUSTER_MANAGER",
+          "GROUP_DATA_ACCESS_ADMIN",
+          "GROUP_DATA_ACCESS_READ_ONLY",
+          "GROUP_DATA_ACCESS_READ_WRITE",
+          "GROUP_OWNER",
+          "GROUP_READ_ONLY"
+        ]
+     ,
+
+    "ApiKeys": {
+      "PublicKey": "rvnbpxkq",
+      "PrivateKey": "c00ddd07-9253-4992-b978-fad2acf8dc1d"
+    }
+  },
+  "previousResourceState": {
+  }
+}
+

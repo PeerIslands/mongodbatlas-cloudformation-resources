@@ -1,0 +1,93 @@
+{
+  "additionalProperties": false,
+  "definitions": {
+
+    "apiKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "PrivateKey": {
+          "type": "string"
+        },
+        "PublicKey": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "description": "Adds one team to the specified project. All members of the team share the same project access. To use this resource, the requesting API Key must have the Project User Admin role. This resource doesn't require the API Key to have an Access List.",
+  "handlers": {
+    "create": {
+      "permissions": [
+       ""
+      ]
+    },
+    "read": {
+      "permissions": [
+        ""
+      ]
+    },
+    "update": {
+      "permissions": [
+        ""
+      ]
+    },
+    "delete": {
+      "permissions": [
+        ""
+      ]
+    }
+  },
+  "primaryIdentifier": ["/properties/TeamId"],
+  "properties": {
+    "ApiKeys": {
+      "$ref": "#/definitions/apiKeyDefinition"
+    },
+
+    "RoleNames": {
+      "type": "array",
+      "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "GROUP_CLUSTER_MANAGER", 
+          "GROUP_DATA_ACCESS_ADMIN", 
+          "GROUP_DATA_ACCESS_READ_ONLY", 
+          "GROUP_DATA_ACCESS_READ_WRITE", 
+          "GROUP_OWNER", 
+          "GROUP_READ_ONLY"
+        ]
+      }
+    },
+    "OrgId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the team.",
+      "maxLength": 24,
+      "minLength": 24,
+      "pattern": "^([a-f0-9]{24})$"
+    },
+    "TeamId": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the team."
+
+    },
+	    "Name": {
+      "type": "string",
+      "description": "Unique 24-hexadecimal character string that identifies the team."
+
+    },
+	    "Usernames": {
+      "type": "array",
+      "description": "One or more organization- or project-level roles to assign to the MongoDB Cloud user.",
+      "items": {
+        "type": "string"
+    
+      }
+    }
+
+  },
+  "readOnlyProperties": ["/properties/TeamId"],
+  "writeOnlyProperties": ["/properties/RoleNames"],
+  "typeName": "MongoDB::Atlas::Teams"
+
+}
