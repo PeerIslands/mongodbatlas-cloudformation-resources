@@ -17,6 +17,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#interfaceendpoints" title="InterfaceEndpoints">InterfaceEndpoints</a>" : <i>[ String, ... ]</i>,
         "<a href="#status" title="Status">Status</a>" : <i>String</i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
+        "<a href="#vpcid" title="VpcId">VpcId</a>" : <i>String</i>,
+        "<a href="#subnetid" title="SubnetId">SubnetId</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikey.md">ApiKey</a></i>,
         "<a href="#region" title="Region">Region</a>" : <i>String</i>
     }
@@ -34,6 +36,8 @@ Properties:
       - String</i>
     <a href="#status" title="Status">Status</a>: <i>String</i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>
+    <a href="#vpcid" title="VpcId">VpcId</a>: <i>String</i>
+    <a href="#subnetid" title="SubnetId">SubnetId</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikey.md">ApiKey</a></i>
     <a href="#region" title="Region">Region</a>: <i>String</i>
 </pre>
@@ -91,6 +95,26 @@ _Required_: Yes
 _Type_: String
 
 _Pattern_: <code>^([a-f0-9]{24})$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### VpcId
+
+String Representing de Vcp ID (like: vpc-xxxxxxxxxxxxxxxx )
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### SubnetId
+
+Unique 24-hexadecimal digit string that identifies your project.
+
+_Required_: No
+
+_Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 

@@ -10,6 +10,8 @@ type Model struct {
 	InterfaceEndpoints  []string `json:",omitempty"`
 	Status              *string  `json:",omitempty"`
 	GroupId             *string  `json:",omitempty"`
+	VpcId               *string  `json:",omitempty"`
+	SubnetId            *string  `json:",omitempty"`
 	ApiKeys             *ApiKey  `json:",omitempty"`
 	Region              *string  `json:",omitempty"`
 }

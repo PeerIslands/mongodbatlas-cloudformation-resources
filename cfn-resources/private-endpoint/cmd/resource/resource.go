@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -16,7 +20,12 @@ import (
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-const providerName = "AWS"
+const (
+	providerName                   = "AWS"
+	creatingPrivateEndpointService = "CREATING_PRIVATE_ENDPOINT_SERVICE"
+	creatingVcpConnection          = "CREATING_PRIVATE_ENDPOINT_SERVICE"
+	creatingPrivateEndpoint        = "CREATING_PRIVATE_ENDPOINT"
+)
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-private-endpoint")
@@ -48,9 +57,65 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeInvalidRequest), nil
 	}
 
-	completionValidation := validateCreationCompletion(mongodbClient, req, currentModel)
-	if completionValidation != nil {
-		return *completionValidation, nil
+	callback, _ := req.CallbackContext["stateName"]
+	callbackValue := fmt.Sprintf("%v", callback)
+
+	log.Infof("Callback value state name %v", callbackValue)
+
+	switch callbackValue {
+	case creatingPrivateEndpointService:
+		callbackId, _ := req.CallbackContext["id"]
+		serviceId := fmt.Sprintf("%v", callbackId)
+
+		vcpe, fpe := validateAndCreateVCPConnection(mongodbClient, req, currentModel, serviceId)
+		if fpe != nil {
+			fpe.ResourceModel = vcpe
+			return *fpe, nil
+		}
+
+		vpcEndpointId := *vcpe.VpcEndpoint.VpcEndpointId
+		log.Infof("Attaching private endpoint interfaceID %v", vpcEndpointId)
+		return attachPrivateEndpoint(mongodbClient, *currentModel, vpcEndpointId, serviceId), nil
+
+	case creatingPrivateEndpoint:
+
+		callbackId, _ := req.CallbackContext["id"]
+		serviceId := fmt.Sprintf("%v", callbackId)
+
+		callbackInterfaceId, _ := req.CallbackContext["interfaceID"]
+		interfaceId := fmt.Sprintf("%v", callbackInterfaceId)
+
+		privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
+			*currentModel.GroupId,
+			providerName,
+			serviceId,
+			interfaceId)
+		if err != nil {
+			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+				response.Response), nil
+		}
+
+		switch privateEndpointResponse.AWSConnectionStatus {
+		case "PENDING_ACCEPTANCE", "PENDING":
+			{
+				return getInProgressProgressEvent(fmt.Sprintf("Adding private endpoint, status: %v", privateEndpointResponse.AWSConnectionStatus), currentModel,
+					creatingPrivateEndpoint, serviceId, &interfaceId), nil
+			}
+		case "AVAILABLE":
+			{
+				currentModel.Id = &serviceId
+				currentModel.InterfaceEndpoints = []string{interfaceId}
+				return handler.ProgressEvent{
+					OperationStatus: handler.Success,
+					Message:         "Create Completed",
+					ResourceModel:   currentModel}, nil
+			}
+		}
+
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Resource is in status : %s", privateEndpointResponse.AWSConnectionStatus),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}, nil
 	}
 
 	privateEndpointRequest := &mongodbatlas.PrivateEndpointConnection{
@@ -74,63 +139,114 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			response.Response), nil
 	}
 
-	currentModel.completeByConnection(*privateEndpointResponse)
+	return getInProgressProgressEvent("Creating private endpoint service", currentModel,
+		creatingPrivateEndpointService, privateEndpointResponse.ID, nil), nil
+}
 
+func getInProgressProgressEvent(message string, currentModel *Model, stateName string, privateEndpointServiceID string, interfaceConnection *string) handler.ProgressEvent {
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
-		Message:              "Create in progress",
+		Message:              message,
 		ResourceModel:        currentModel,
 		CallbackDelaySeconds: 10,
 		CallbackContext: map[string]interface{}{
-			"stateName": "CREATING",
-			"id":        privateEndpointResponse.ID,
-		}}, nil
+			"stateName":   stateName,
+			"id":          privateEndpointServiceID,
+			"interfaceID": interfaceConnection,
+		}}
 }
 
-func validateCreationCompletion(mongodbClient *mongodbatlas.Client, req handler.Request, currentModel *Model) *handler.ProgressEvent {
-	callback, _ := req.CallbackContext["stateName"]
-
-	if callback != nil {
-		callbackValue := fmt.Sprintf("%v", callback)
-		if callbackValue == "CREATING" {
-			callbackId, _ := req.CallbackContext["id"]
-			id := fmt.Sprintf("%v", callbackId)
-
-			privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, id)
-			if err != nil {
-				ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-					response.Response)
-				return &ev
-			}
-
-			currentModel.completeByConnection(*privateEndpointResponse)
-
-			if privateEndpointResponse.Status == "INITIATING" {
-				ev := handler.ProgressEvent{
-					OperationStatus:      handler.InProgress,
-					Message:              "Create in progress",
-					ResourceModel:        currentModel,
-					CallbackDelaySeconds: 10,
-					CallbackContext: map[string]interface{}{
-						"stateName": "CREATING",
-						"id":        privateEndpointResponse.ID,
-					}}
-				return &ev
-			} else if privateEndpointResponse.Status == "AVAILABLE" {
-				ev := handler.ProgressEvent{
-					OperationStatus: handler.Success,
-					Message:         "Create success",
-					ResourceModel:   currentModel}
-				return &ev
-			} else {
-				ev := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s", privateEndpointResponse.Status),
-					cloudformation.HandlerErrorCodeInvalidRequest)
-				return &ev
-			}
-		}
+func validateAndCreateVCPConnection(mongodbClient *mongodbatlas.Client, req handler.Request, currentModel *Model, serviceId string) (*ec2.CreateVpcEndpointOutput, *handler.ProgressEvent) {
+	peCon, completionValidation := validatePrivateEndpointServiceCreationCompletion(mongodbClient, req, currentModel, serviceId)
+	if completionValidation != nil {
+		return nil, completionValidation
 	}
 
-	return nil
+	vcpEndpoint, progressEvent := createVcpEndpoint(*peCon, currentModel)
+	if progressEvent != nil {
+		return nil, progressEvent
+	}
+
+	return vcpEndpoint, nil
+}
+
+func createVcpEndpoint(peCon mongodbatlas.PrivateEndpointConnection, currentModel *Model) (*ec2.CreateVpcEndpointOutput, *handler.ProgressEvent) {
+	mySession := session.Must(session.NewSession())
+
+	// Create a EC2 client from just a session.
+	svc := ec2.New(mySession, aws.NewConfig().WithRegion("us-east-1"))
+
+	subnetIds := []*string{currentModel.SubnetId}
+
+	vcpType := "Interface"
+
+	connection := ec2.CreateVpcEndpointInput{
+		VpcId:           currentModel.VpcId,
+		ServiceName:     &peCon.EndpointServiceName,
+		VpcEndpointType: &vcpType,
+		SubnetIds:       subnetIds,
+	}
+
+	log.Infof("VpcId: %v", *connection.VpcId)
+	log.Infof("ServiceName: %v", *connection.ServiceName)
+	log.Infof("VpcEndpointType: %v", *connection.VpcEndpointType)
+	log.Infof("SubnetIds: %v", *connection.SubnetIds[0])
+	log.Infof("region: %v", *currentModel.Region)
+
+	vpcE, err := svc.CreateVpcEndpoint(&connection)
+	if err != nil {
+		fpe := handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeGeneralServiceException}
+		return nil, &fpe
+	}
+
+	log.Info("PRUEB: se creo correctamente el vcp endpoint")
+
+	return vpcE, nil
+}
+
+func attachPrivateEndpoint(mongodbClient *mongodbatlas.Client, currentModel Model, interfaceEndpointID string, endpointServiceID string) handler.ProgressEvent {
+
+	interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
+		ID: interfaceEndpointID,
+	}
+
+	_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
+		*currentModel.GroupId,
+		providerName,
+		endpointServiceID,
+		interfaceEndpointRequest)
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error creating resource : %s", err.Error()),
+			response.Response)
+	}
+
+	return getInProgressProgressEvent("Add private endpoint in progress", &currentModel,
+		creatingPrivateEndpoint, endpointServiceID, &interfaceEndpointID)
+}
+
+func validatePrivateEndpointServiceCreationCompletion(mongodbClient *mongodbatlas.Client, req handler.Request, currentModel *Model, serviceId string) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
+
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, serviceId)
+	if err != nil {
+		ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response)
+		return nil, &ev
+	}
+
+	if privateEndpointResponse.Status == "INITIATING" {
+		ev := getInProgressProgressEvent("Private endpoint service initiating", currentModel,
+			creatingPrivateEndpointService, privateEndpointResponse.ID, nil)
+		return nil, &ev
+	} else if privateEndpointResponse.Status == "AVAILABLE" {
+		return privateEndpointResponse, nil
+	} else {
+		ev := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating private endpoint in status : %s", privateEndpointResponse.Status),
+			cloudformation.HandlerErrorCodeInvalidRequest)
+		return nil, &ev
+	}
 }
 
 // Read handles the Read event from the Cloudformation service.
