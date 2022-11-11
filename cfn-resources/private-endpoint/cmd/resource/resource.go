@@ -313,33 +313,51 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			cloudformation.HandlerErrorCodeNotFound), nil
 	}
 
-	response, err := mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.GroupId,
-		providerName,
-		*currentModel.Id)
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id)
 	if err != nil {
-		callback, _ := req.CallbackContext["stateName"]
-
-		if callback != nil {
-			callbackValue := fmt.Sprintf("%v", callback)
-			if callbackValue == "DELETING" && response.StatusCode == http.StatusNotFound {
-				return handler.ProgressEvent{
-					OperationStatus: handler.Success,
-					Message:         "Delete success"}, nil
-			}
-		}
-
 		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response), nil
 	}
 
-	return handler.ProgressEvent{
-		OperationStatus:      handler.InProgress,
-		Message:              "Delete in progress",
-		ResourceModel:        currentModel,
-		CallbackDelaySeconds: 20,
-		CallbackContext: map[string]interface{}{
-			"stateName": "DELETING",
-		}}, nil
+	callback, _ := req.CallbackContext["stateName"]
+	if callback != nil {
+		callbackValue := fmt.Sprintf("%v", callback)
+		if callbackValue == "DELETING" {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              "Delete in progress",
+				ResourceModel:        currentModel,
+				CallbackDelaySeconds: 20,
+				CallbackContext: map[string]interface{}{
+					"stateName": "DELETING",
+				}}, nil
+		}
+	}
+
+	currentModel.completeByConnection(*privateEndpointResponse)
+
+	if len(currentModel.InterfaceEndpoints) == 0 {
+		response, err := mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.GroupId,
+			providerName,
+			*currentModel.Id)
+
+		if err != nil {
+
+			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+				response.Response), nil
+		}
+
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Delete in progress",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: 20,
+			CallbackContext: map[string]interface{}{
+				"stateName": "DELETING",
+			}}, nil
+	} else {
+
+	}
 }
 
 // List handles the List event from the Cloudformation service.
