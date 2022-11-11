@@ -26,7 +26,7 @@
         },
         "AuditFilter":{
             "type":"string",
-            "description":"JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\\`)."
+            "description":"JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/."
         },
         "ConfigurationType":{
             "type":"string",
