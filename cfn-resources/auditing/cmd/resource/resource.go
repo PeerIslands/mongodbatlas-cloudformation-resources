@@ -47,6 +47,19 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 	var res *mongodbatlas.Response
 
+	atlasAuditing, res, err := client.Auditing.Get(context.Background(), *currentModel.GroupId)
+	if err != nil {
+		log.Debugf("Create - error: %+v", err)
+		return progress_events.GetFailedEventByResponse(err.Error(), res.Response), nil
+	}
+
+	if *atlasAuditing.Enabled {
+		return handler.ProgressEvent{
+			HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists,
+			OperationStatus:  handler.Failed,
+		}, nil
+	}
+
 	enabled := true
 
 	auditingInput := mongodbatlas.Auditing{
@@ -61,7 +74,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		auditingInput.AuditFilter = *currentModel.AuditFilter
 	}
 
-	atlasAuditing, res, err := client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
+	atlasAuditing, res, err = client.Auditing.Configure(context.Background(), *currentModel.GroupId, &auditingInput)
 
 	if err != nil {
 		log.Debugf("Create - error: %+v", err)

@@ -1,4 +1,6 @@
-# Mongodb::Atlas::Auditing
+# MongoDB::Atlas::Auditing
+
+Returns and edits database auditing settings for MongoDB Cloud projects.
 
 ## Syntax
 
@@ -8,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::Auditing",
+    "Type" : "MongoDB::Atlas::Auditing",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#auditauthorizationsuccess" title="AuditAuthorizationSuccess">AuditAuthorizationSuccess</a>" : <i>Boolean</i>,
@@ -22,7 +24,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::Auditing
+Type: MongoDB::Atlas::Auditing
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#auditauthorizationsuccess" title="AuditAuthorizationSuccess">AuditAuthorizationSuccess</a>: <i>Boolean</i>
@@ -53,7 +55,7 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 
 #### AuditFilter
 
-JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\`).
+JSON document that specifies which events to record. Escape any characters that may prevent parsing, such as single or double quotes, using a backslash (`\`), for more information about audit filters refer to https://www.mongodb.com/docs/manual/tutorial/configure-audit-filters/.
 
 _Required_: No
 
