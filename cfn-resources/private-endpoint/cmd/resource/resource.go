@@ -67,7 +67,7 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		callbackId, _ := req.CallbackContext["id"]
 		serviceId := fmt.Sprintf("%v", callbackId)
 
-		vcpe, fpe := validateAndCreateVCPConnection(mongodbClient, req, currentModel, serviceId)
+		vcpe, fpe := validateAndCreateVCPConnection(mongodbClient, currentModel, serviceId)
 		if fpe != nil {
 			fpe.ResourceModel = vcpe
 			return *fpe, nil
@@ -156,13 +156,13 @@ func getInProgressProgressEvent(message string, currentModel *Model, stateName s
 		}}
 }
 
-func validateAndCreateVCPConnection(mongodbClient *mongodbatlas.Client, req handler.Request, currentModel *Model, serviceId string) (*ec2.CreateVpcEndpointOutput, *handler.ProgressEvent) {
-	peCon, completionValidation := validatePrivateEndpointServiceCreationCompletion(mongodbClient, req, currentModel, serviceId)
+func validateAndCreateVCPConnection(mongodbClient *mongodbatlas.Client, currentModel *Model, serviceId string) (*ec2.CreateVpcEndpointOutput, *handler.ProgressEvent) {
+	peCon, completionValidation := validatePrivateEndpointServiceCreationCompletion(mongodbClient, currentModel, serviceId)
 	if completionValidation != nil {
 		return nil, completionValidation
 	}
 
-	vcpEndpoint, progressEvent := createVcpEndpoint(*peCon, currentModel)
+	vcpEndpoint, progressEvent := createVpcEndpoint(*peCon, currentModel)
 	if progressEvent != nil {
 		return nil, progressEvent
 	}
@@ -170,11 +170,11 @@ func validateAndCreateVCPConnection(mongodbClient *mongodbatlas.Client, req hand
 	return vcpEndpoint, nil
 }
 
-func createVcpEndpoint(peCon mongodbatlas.PrivateEndpointConnection, currentModel *Model) (*ec2.CreateVpcEndpointOutput, *handler.ProgressEvent) {
+func createVpcEndpoint(peCon mongodbatlas.PrivateEndpointConnection, currentModel *Model) (*ec2.CreateVpcEndpointOutput, *handler.ProgressEvent) {
 	mySession := session.Must(session.NewSession())
 
 	// Create a EC2 client from just a session.
-	svc := ec2.New(mySession, aws.NewConfig().WithRegion("us-east-1"))
+	svc := ec2.New(mySession, aws.NewConfig().WithRegion(*currentModel.Region))
 
 	subnetIds := []*string{currentModel.SubnetId}
 
@@ -187,12 +187,6 @@ func createVcpEndpoint(peCon mongodbatlas.PrivateEndpointConnection, currentMode
 		SubnetIds:       subnetIds,
 	}
 
-	log.Infof("VpcId: %v", *connection.VpcId)
-	log.Infof("ServiceName: %v", *connection.ServiceName)
-	log.Infof("VpcEndpointType: %v", *connection.VpcEndpointType)
-	log.Infof("SubnetIds: %v", *connection.SubnetIds[0])
-	log.Infof("region: %v", *currentModel.Region)
-
 	vpcE, err := svc.CreateVpcEndpoint(&connection)
 	if err != nil {
 		fpe := handler.ProgressEvent{
@@ -202,7 +196,36 @@ func createVcpEndpoint(peCon mongodbatlas.PrivateEndpointConnection, currentMode
 		return nil, &fpe
 	}
 
-	log.Info("PRUEB: se creo correctamente el vcp endpoint")
+	return vpcE, nil
+}
+
+func deleteVcpEndpoints(currentModel *Model) (*ec2.DeleteVpcEndpointsOutput, *handler.ProgressEvent) {
+	mySession := session.Must(session.NewSession())
+
+	// Create a EC2 client from just a session.
+	svc := ec2.New(mySession, aws.NewConfig().WithRegion("us-east-1"))
+
+	subnetIds := currentModel.InterfaceEndpoints
+	vpcEndpointIds := make([]*string, 0)
+
+	for _, i := range subnetIds {
+		vpcEndpointIds = append(vpcEndpointIds, &i)
+	}
+
+	connection := ec2.DeleteVpcEndpointsInput{
+		DryRun:         nil,
+		VpcEndpointIds: vpcEndpointIds,
+	}
+
+	//vpcE, err := svc.CreateVpcEndpoint(&connection)
+	vpcE, err := svc.DeleteVpcEndpoints(&connection)
+	if err != nil {
+		fpe := handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
+			HandlerErrorCode: cloudformation.HandlerErrorCodeGeneralServiceException}
+		return nil, &fpe
+	}
 
 	return vpcE, nil
 }
@@ -227,7 +250,7 @@ func attachPrivateEndpoint(mongodbClient *mongodbatlas.Client, currentModel Mode
 		creatingPrivateEndpoint, endpointServiceID, &interfaceEndpointID)
 }
 
-func validatePrivateEndpointServiceCreationCompletion(mongodbClient *mongodbatlas.Client, req handler.Request, currentModel *Model, serviceId string) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
+func validatePrivateEndpointServiceCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel *Model, serviceId string) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, serviceId)
 	if err != nil {
@@ -314,15 +337,17 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, providerName, *currentModel.Id)
-	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
-			response.Response), nil
-	}
 
 	callback, _ := req.CallbackContext["stateName"]
 	if callback != nil {
 		callbackValue := fmt.Sprintf("%v", callback)
 		if callbackValue == "DELETING" {
+			if response.StatusCode == http.StatusNotFound {
+				return handler.ProgressEvent{
+					OperationStatus: handler.Success,
+					Message:         "Delete success"}, nil
+			}
+
 			return handler.ProgressEvent{
 				OperationStatus:      handler.InProgress,
 				Message:              "Delete in progress",
@@ -334,30 +359,53 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		}
 	}
 
+	if err != nil {
+		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+			response.Response), nil
+	}
+
 	currentModel.completeByConnection(*privateEndpointResponse)
 
-	if len(currentModel.InterfaceEndpoints) == 0 {
-		response, err := mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.GroupId,
+	if len(currentModel.InterfaceEndpoints) != 0 {
+		for _, intEndpoints := range currentModel.InterfaceEndpoints {
+
+			//delete the private endpoint
+			response, err := mongodbClient.PrivateEndpoints.DeleteOnePrivateEndpoint(context.Background(),
+				*currentModel.GroupId,
+				providerName,
+				*currentModel.Id,
+				intEndpoints)
+			if err != nil {
+				return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error deleting resource : %s", err.Error()),
+					response.Response), nil
+			}
+		}
+		_, epr := deleteVcpEndpoints(currentModel)
+
+		if epr != nil {
+			return *epr, nil
+		}
+
+	} else {
+		response, err = mongodbClient.PrivateEndpoints.Delete(context.Background(), *currentModel.GroupId,
 			providerName,
 			*currentModel.Id)
 
 		if err != nil {
-
 			return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 				response.Response), nil
 		}
-
-		return handler.ProgressEvent{
-			OperationStatus:      handler.InProgress,
-			Message:              "Delete in progress",
-			ResourceModel:        currentModel,
-			CallbackDelaySeconds: 20,
-			CallbackContext: map[string]interface{}{
-				"stateName": "DELETING",
-			}}, nil
-	} else {
-
 	}
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              "Delete in progress",
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: 20,
+		CallbackContext: map[string]interface{}{
+			"stateName":         "DELETING",
+			"AwsVpcEndpointIds": currentModel.InterfaceEndpoints,
+		}}, nil
 }
 
 // List handles the List event from the Cloudformation service.
