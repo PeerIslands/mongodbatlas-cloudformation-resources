@@ -7,16 +7,17 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-func CreateVpcEndpoint(peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, VpcId string) (*string, *handler.ProgressEvent) {
+func newEc2Client(region string) *ec2.EC2 {
 	mySession := session.Must(session.NewSession())
+	return ec2.New(mySession, aws.NewConfig().WithRegion(region))
+}
 
-	// Create a EC2 client from just a session.
-	svc := ec2.New(mySession, aws.NewConfig().WithRegion(region))
-
-	subnetIds := []*string{&subnetId}
+func Create(peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, VpcId string) (*string, *handler.ProgressEvent) {
+	svc := newEc2Client(region)
 
 	vcpType := "Interface"
 
@@ -24,17 +25,39 @@ func CreateVpcEndpoint(peCon mongodbatlas.PrivateEndpointConnection, region stri
 		VpcId:           &VpcId,
 		ServiceName:     &peCon.EndpointServiceName,
 		VpcEndpointType: &vcpType,
-		SubnetIds:       subnetIds,
+		SubnetIds:       []*string{&subnetId},
 	}
 
 	vpcE, err := svc.CreateVpcEndpoint(&connection)
 	if err != nil {
-		fpe := handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
-			HandlerErrorCode: cloudformation.HandlerErrorCodeGeneralServiceException}
+		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error creating vcp Endpoint: %s", err.Error()),
+			cloudformation.HandlerErrorCodeGeneralServiceException)
 		return nil, &fpe
 	}
 
 	return vpcE.VpcEndpoint.VpcEndpointId, nil
+}
+
+func Delete(interfaceEndpoints []string, region string) (*ec2.DeleteVpcEndpointsOutput, *handler.ProgressEvent) {
+	svc := newEc2Client(region)
+
+	vpcEndpointIds := make([]*string, 0)
+
+	for _, i := range interfaceEndpoints {
+		vpcEndpointIds = append(vpcEndpointIds, &i)
+	}
+
+	connection := ec2.DeleteVpcEndpointsInput{
+		DryRun:         nil,
+		VpcEndpointIds: vpcEndpointIds,
+	}
+
+	vpcE, err := svc.DeleteVpcEndpoints(&connection)
+	if err != nil {
+		fpe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error deleting vcp Endpoint: %s", err.Error()),
+			cloudformation.HandlerErrorCodeGeneralServiceException)
+		return nil, &fpe
+	}
+
+	return vpcE, nil
 }
