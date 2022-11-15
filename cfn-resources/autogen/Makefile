@@ -22,7 +22,7 @@ create:
 	cfn init -t Mongodb::Atlas::$(resourceName) -a r && cfn generate
 	cd ../autogen && \
 	go run main.go -res ../$(dirName) -schemaName $(resourceName)
-	cd ../$(dirName) && rm go.mod
+	cd ../$(dirName) && rm go.mod && rm .gitignore
 
 schema:
 	cd schema-gen && go build
