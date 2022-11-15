@@ -317,7 +317,7 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 	if reqBody != nil && reqBody.Value != nil && reqBody.Value.Content["application/json"] != nil &&
 		reqBody.Value.Content["application/json"].Schema != nil {
 		reqSchemaKey := filepath.Base(reqBody.Value.Content["application/json"].Schema.Ref)
-		schemaKeys = append(schemaKeys, reqSchemaKey)
+		schemaKeys = append(schemaKeys, capitalize(reqSchemaKey))
 		//Read from Request body
 		if doc.Components.Schemas[filepath.Base(reqSchemaKey)] != nil {
 			value := *doc.Components.Schemas[filepath.Base(reqSchemaKey)]
@@ -339,7 +339,7 @@ func readRequestBody(method *openapi3.Operation, doc *openapi3.T) (schemaKeys []
 							if contains(schemaKey, schemaKeys) {
 								continue
 							}
-							schemaKeys = append(schemaKeys, schemaKey)
+							schemaKeys = append(schemaKeys, capitalize(schemaKey))
 
 						}
 					}
@@ -365,7 +365,7 @@ func readResponseBody(method *openapi3.Operation, doc *openapi3.T) (schemaKey st
 		}
 
 	}
-	return resSchemaKey, resSchema, definitions
+	return capitalize(resSchemaKey), resSchema, definitions
 }
 
 func readQueryParams(method *openapi3.Operation) map[string]Property {
@@ -383,7 +383,7 @@ func readQueryParams(method *openapi3.Operation) map[string]Property {
 }
 
 func defaultProperty(defaultProperty map[string]Property) map[string]Property {
-	defaultProperty["ApiKeys"] = Property{Ref: "#/definitions/apiKeyDefinition"}
+	defaultProperty["ApiKeys"] = Property{Ref: "#/definitions/ApiKeyDefinition"}
 	return defaultProperty
 }
 
@@ -401,7 +401,7 @@ func defaultDefinition(definitions map[string]Definitions) map[string]Definition
 	defaultDef["PrivateKey"] = Property{
 		Type: "string",
 	}
-	definitions["apiKeyDefinition"] = Definitions{
+	definitions["ApiKeyDefinition"] = Definitions{
 		Type:                 "object",
 		Properties:           defaultDef,
 		AdditionalProperties: false,
@@ -418,7 +418,7 @@ func readOnlyAndUniqueDefinitions(def map[string]Definitions) ([]string, []strin
 				readOnly = append(readOnly, fmt.Sprintf("/%s/%s/%s", "definitions", id, rid))
 			}
 			if strings.HasPrefix(ro.Description, Unique) {
-				ids = append(ids, fmt.Sprintf("/%s/%s/%s", "definitions", id, rid))
+				ids = append(ids, fmt.Sprintf("/%s/%s/%s", "definitions", capitalize(id), capitalize(rid)))
 			}
 		}
 	}
@@ -588,7 +588,7 @@ func property(val *openapi3.SchemaRef) Property {
 		InsertionOrder: false,
 		Ref: func() string {
 			if val.Ref != "" {
-				return "#/definitions/" + strings.ReplaceAll(filepath.Base(val.Ref), "_", "")
+				return "#/definitions/" + capitalize(strings.ReplaceAll(filepath.Base(val.Ref), "_", ""))
 			}
 			return ""
 		}(),
@@ -599,7 +599,7 @@ func property(val *openapi3.SchemaRef) Property {
 			var ref string
 			if val.Value.Items != nil {
 				if val.Value.Items.Ref != "" {
-					ref = "#/definitions/" + strings.ReplaceAll(filepath.Base(val.Value.Items.Ref), "_", "")
+					ref = "#/definitions/" + capitalize(strings.ReplaceAll(filepath.Base(val.Value.Items.Ref), "_", ""))
 				}
 				return &Items{
 					Ref:  ref,
@@ -626,7 +626,7 @@ func readProperty(parameter *openapi3.Parameter) map[string]Property {
 			InsertionOrder: false,
 			Ref: func() string {
 				if val.Ref != "" {
-					return "#/definitions/" + strings.ReplaceAll(filepath.Base(val.Ref), "_", "")
+					return "#/definitions/" + capitalize(strings.ReplaceAll(filepath.Base(val.Ref), "_", ""))
 				}
 				return ""
 			}(),
@@ -655,6 +655,9 @@ func readProperty(parameter *openapi3.Parameter) map[string]Property {
 }
 
 func capitalize(key string) string {
+	if len(key) <= 0 {
+		return key
+	}
 	r := []rune(key)
 	return string(append([]rune{unicode.ToUpper(r[0])}, r[1:]...))
 }

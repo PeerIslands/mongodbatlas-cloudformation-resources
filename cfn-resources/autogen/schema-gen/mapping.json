@@ -1,10 +1,10 @@
 {
   "resources" : [
     {
-      "typeName" :"FederatedSettingOrgConfigs",
+      "typeName" :"ServerlessInstance",
       "openApiPath" : [
-        "/api/{app}/v1.0/federationSettings/{federationSettingsId}/connectedOrgConfigs/{orgId}",
-        "/api/{app}/v1.0/federationSettings/{federationSettingsId}/connectedOrgConfigs"
+        "/api/atlas/v1.0/groups/{groupId}/serverless",
+        "/api/atlas/v1.0/groups/{groupId}/serverless/{name}"
       ]
     }
   ]
