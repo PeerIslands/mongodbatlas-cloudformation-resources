@@ -16,39 +16,18 @@
     "SampleRefreshIntervalBIConnector": "310"
   },
   "BackupEnabled": "false",
-  "BiConnector": {},
   "ClusterType": "REPLICASET",
-  "Paused": "false",
-  "PitEnabled": "false",
-  "BiConnector": {
-    "ReadPreference": "secondary",
-    "Enabled": "false"
-  },
   "ReplicationSpecs": [
     {
       "NumShards": "1",
       "AdvancedRegionConfigs": [
         {
-          "AutoScaling": {
-            "DiskGB": {
-              "Enabled": "true"
-            },
-            "Compute": {
-              "Enabled": "false",
-              "ScaleDownEnabled": "false"
-            }
-          },
           "AnalyticsSpecs": {
             "EbsVolumeType": "STANDARD",
             "InstanceSize": "M10",
-            "NodeCount": "3"
+            "NodeCount": "1"
           },
           "ElectableSpecs": {
-            "EbsVolumeType": "STANDARD",
-            "InstanceSize": "M10",
-            "NodeCount": "3"
-          },
-          "ReadOnlySpecs": {
             "EbsVolumeType": "STANDARD",
             "InstanceSize": "M10",
             "NodeCount": "3"

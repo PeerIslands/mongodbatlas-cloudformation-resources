@@ -35,6 +35,9 @@
         "AdvancedRegionConfig": {
             "type": "object",
             "properties": {
+                "AnalyticsAutoScaling": {
+                    "$ref": "#/definitions/advancedAutoScaling"
+                },
                 "AutoScaling": {
                     "$ref": "#/definitions/advancedAutoScaling"
                 },
@@ -331,6 +334,10 @@
         "VersionReleaseSystem": {
             "description": "Method by which the cluster maintains the MongoDB versions. If value is CONTINUOUS, you must not specify mongoDBMajorVersion",
             "type": "string"
+        },
+        "TerminationProtectionEnabled": {
+            "description": "Flag that indicates whether termination protection is enabled on the cluster. If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB Cloud will delete the cluster.",
+            "type": "boolean"
         }
     },
     "additionalProperties": false,

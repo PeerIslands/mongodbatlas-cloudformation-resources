@@ -116,11 +116,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	log.Infof("Created new deployment secret for cluster. Secert Name = Cluster Id:%s", *secretName)
 	currentModel.Id = secretName
-
+	var none = "NONE"
+	if currentModel.EncryptionAtRestProvider == nil {
+		currentModel.EncryptionAtRestProvider = &none
+	}
 	// Atlas client
 	clusterRequest := &mongodbatlas.AdvancedCluster{
 		Name:                     *currentModel.Name,
-		EncryptionAtRestProvider: AWS,
+		EncryptionAtRestProvider: *currentModel.EncryptionAtRestProvider,
 		ReplicationSpecs:         expandReplicationSpecs(currentModel.ReplicationSpecs),
 	}
 
@@ -169,6 +172,8 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	if currentModel.RootCertType != nil {
 		clusterRequest.RootCertType = *currentModel.RootCertType
 	}
+
+	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 
 	// Create Cluster
 	cluster, _, err := client.AdvancedClusters.Create(context.Background(), *currentModel.ProjectId, clusterRequest)
@@ -520,11 +525,11 @@ func expandReplicationSpecs(replicationSpecs []AdvancedReplicationSpec) []*mongo
 
 func expandAutoScaling(scaling *AdvancedAutoScaling) *mongodbatlas.AdvancedAutoScaling {
 	advAutoScaling := &mongodbatlas.AdvancedAutoScaling{}
+	if scaling == nil {
+		return nil
+	}
 	if scaling.Compute != nil {
 		var minInstanceSize string
-		if scaling == nil {
-			return nil
-		}
 		if scaling.Compute.MinInstanceSize != nil {
 			minInstanceSize = *scaling.Compute.MinInstanceSize
 		}
@@ -567,6 +572,10 @@ func expandRegionConfig(regionCfg AdvancedRegionConfig) *mongodbatlas.AdvancedRe
 
 	if regionCfg.AutoScaling != nil {
 		advRegionConfig.AutoScaling = expandAutoScaling(regionCfg.AutoScaling)
+	}
+
+	if regionCfg.AnalyticsAutoScaling != nil {
+		advRegionConfig.AnalyticsAutoScaling = expandAutoScaling(regionCfg.AnalyticsAutoScaling)
 	}
 	if regionCfg.AnalyticsSpecs != nil {
 		advRegionConfig.AnalyticsSpecs = expandRegionConfigSpec(regionCfg.AnalyticsSpecs)
@@ -683,9 +692,10 @@ func flattenRegionsConfig(regionConfigs []*mongodbatlas.AdvancedRegionConfig) []
 
 func flattenRegionConfig(regionCfg *mongodbatlas.AdvancedRegionConfig) AdvancedRegionConfig {
 	advRegConfig := AdvancedRegionConfig{
-		AutoScaling: flattenAutoScaling(regionCfg.AutoScaling),
-		RegionName:  &regionCfg.RegionName,
-		Priority:    regionCfg.Priority,
+		AutoScaling:          flattenAutoScaling(regionCfg.AutoScaling),
+		AnalyticsAutoScaling: flattenAutoScaling(regionCfg.AnalyticsAutoScaling),
+		RegionName:           &regionCfg.RegionName,
+		Priority:             regionCfg.Priority,
 	}
 	if regionCfg.AnalyticsSpecs != nil {
 		advRegConfig.AnalyticsSpecs = flattenRegionConfigSpec(regionCfg.AnalyticsSpecs)
@@ -920,6 +930,8 @@ func setClusterData(currentModel *Model, cluster *mongodbatlas.AdvancedCluster) 
 	if currentModel.VersionReleaseSystem != nil {
 		currentModel.VersionReleaseSystem = &cluster.VersionReleaseSystem
 	}
+
+	currentModel.TerminationProtectionEnabled = cluster.TerminationProtectionEnabled
 }
 
 func removeLabel(list []mongodbatlas.Label, item mongodbatlas.Label) []mongodbatlas.Label {
@@ -986,6 +998,8 @@ func updateCluster(ctx context.Context, client *mongodbatlas.Client, currentMode
 	if currentModel.VersionReleaseSystem != nil {
 		clusterRequest.VersionReleaseSystem = *currentModel.VersionReleaseSystem
 	}
+
+	clusterRequest.TerminationProtectionEnabled = currentModel.TerminationProtectionEnabled
 
 	log.Debugf("params : %+v %+v %+v", ctx, client, clusterRequest)
 	cluster, resp, err := client.AdvancedClusters.Update(ctx, *currentModel.ProjectId, *currentModel.Name, clusterRequest)

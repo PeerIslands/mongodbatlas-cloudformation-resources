@@ -28,7 +28,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#pitenabled" title="PitEnabled">PitEnabled</a>" : <i>Boolean</i>,
         "<a href="#replicationspecs" title="ReplicationSpecs">ReplicationSpecs</a>" : <i>[ <a href="advancedreplicationspec.md">advancedReplicationSpec</a>, ... ]</i>,
         "<a href="#rootcerttype" title="RootCertType">RootCertType</a>" : <i>String</i>,
-        "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>
+        "<a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>" : <i>String</i>,
+        "<a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>" : <i>Boolean</i>
     }
 }
 </pre>
@@ -58,6 +59,7 @@ Properties:
       - <a href="advancedreplicationspec.md">advancedReplicationSpec</a></i>
     <a href="#rootcerttype" title="RootCertType">RootCertType</a>: <i>String</i>
     <a href="#versionreleasesystem" title="VersionReleaseSystem">VersionReleaseSystem</a>: <i>String</i>
+    <a href="#terminationprotectionenabled" title="TerminationProtectionEnabled">TerminationProtectionEnabled</a>: <i>Boolean</i>
 </pre>
 
 ## Properties
@@ -223,6 +225,16 @@ Method by which the cluster maintains the MongoDB versions. If value is CONTINUO
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### TerminationProtectionEnabled
+
+Flag that indicates whether termination protection is enabled on the cluster. If set to true, MongoDB Cloud won't delete the cluster. If set to false, MongoDB Cloud will delete the cluster.
+
+_Required_: No
+
+_Type_: Boolean
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
