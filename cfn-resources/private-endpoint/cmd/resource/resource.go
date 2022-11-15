@@ -7,9 +7,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/steps/aws_vpc_endpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/steps/private_endpoint"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/steps/private_endpoint_service"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/aws_vpc_endpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint"
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource/steps/private_endpoint_service"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
@@ -36,7 +37,7 @@ func validateModel(event constants.Event, model *Model) *handler.ProgressEvent {
 }
 
 func getProcessStatus(req handler.Request) (resource_constats.EventStatus, *handler.ProgressEvent) {
-	callback, _ := req.CallbackContext["stateName"]
+	callback, _ := req.CallbackContext["StateName"]
 	if callback == nil {
 		return resource_constats.CreationInit, nil
 	}
@@ -59,9 +60,26 @@ func (m *Model) completeByConnection(c mongodbatlas.PrivateEndpointConnection) {
 	m.Status = &c.Status
 }
 
+func addModelToProgressEvent(progressEvent *handler.ProgressEvent, model *Model) handler.ProgressEvent {
+	if progressEvent.OperationStatus == handler.InProgress {
+		progressEvent.ResourceModel = model
+
+		callbackId, _ := progressEvent.CallbackContext["Id"]
+
+		if callbackId != nil {
+			id := fmt.Sprint(callbackId)
+			model.Id = &id
+		}
+
+	}
+
+	return *progressEvent
+}
+
 // Create handles the Create event from the Cloudformation service.
 func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	setup()
+	log.Info("Initiated Create")
 	modelValidation := validateModel(constants.Create, currentModel)
 	if modelValidation != nil {
 		return *modelValidation, nil
@@ -78,23 +96,37 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *pe, nil
 	}
 
+	log.Infof("Status recieved %s", status)
+
 	switch status {
 	case resource_constats.CreationInit:
-		return private_endpoint_service.CreatePrivateEndpoint(*mongodbClient, currentModel), nil
+		pe := private_endpoint_service.CreatePrivateEndpoint(*mongodbClient, *currentModel.Region, *currentModel.GroupId)
+		return addModelToProgressEvent(&pe, currentModel), nil
 	case resource_constats.CreatingPrivateEndpointService:
-		peConnection, completionValidation := private_endpoint_service.ValidateCreationCompletion(mongodbClient, currentModel, req)
+		peConnection, completionValidation := private_endpoint_service.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
 		if completionValidation != nil {
-			return *completionValidation, nil
+			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointId, progressEvent := aws_vpc_endpoint.CreateVpcEndpoint(*peConnection, currentModel)
+		vpcEndpointId, progressEvent := aws_vpc_endpoint.CreateVpcEndpoint(*peConnection, *currentModel.Region, *currentModel.SubnetId, *currentModel.VpcId)
 		if progressEvent != nil {
-			return *progressEvent, nil
+			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
 
-		return private_endpoint.CreatePrivateEndpoint(mongodbClient, *currentModel, *vpcEndpointId, peConnection.ID), nil
+		pe := private_endpoint.CreatePrivateEndpoint(mongodbClient, *currentModel.GroupId, *vpcEndpointId, peConnection.ID)
+
+		return addModelToProgressEvent(&pe, currentModel), nil
 	default:
-		return private_endpoint.ValidateCreationCompletion(mongodbClient, currentModel, req), err
+		ValidationOutput, progressEvent := private_endpoint.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
+		if progressEvent != nil {
+			return addModelToProgressEvent(progressEvent, currentModel), nil
+		}
+		currentModel.Id = &ValidationOutput.Id
+		currentModel.InterfaceEndpoints = ValidationOutput.InterfaceEndpoints
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			Message:         "Create Completed",
+			ResourceModel:   currentModel}, nil
 	}
 }
 

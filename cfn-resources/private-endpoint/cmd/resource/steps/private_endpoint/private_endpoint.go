@@ -7,9 +7,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/structs"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
@@ -27,22 +25,26 @@ type privateEndpointCreationCallBackContext struct {
 }
 
 func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {
-	for k, v := range m {
-		err := structs.SetField(s, k, v)
-		if err != nil {
-			return err
-		}
+	s.Id = fmt.Sprint(m["Id"])
+	s.InterfaceId = fmt.Sprint(m["InterfaceId"])
+	eventStatusParam := fmt.Sprint(m["StateName"])
+	eventStatus, err := constants.ParseEventStatus(eventStatusParam)
+	if err != nil {
+		return err
 	}
+
+	s.StateName = eventStatus
+
 	return nil
 }
 
-func CreatePrivateEndpoint(mongodbClient *mongodbatlas.Client, currentModel resource.Model, interfaceEndpointID string, endpointServiceID string) handler.ProgressEvent {
+func CreatePrivateEndpoint(mongodbClient *mongodbatlas.Client, groupId string, interfaceEndpointID string, endpointServiceID string) handler.ProgressEvent {
 	interfaceEndpointRequest := &mongodbatlas.InterfaceEndpointConnection{
 		ID: interfaceEndpointID,
 	}
 
 	_, response, err := mongodbClient.PrivateEndpoints.AddOnePrivateEndpoint(context.Background(),
-		*currentModel.GroupId,
+		groupId,
 		ProviderName,
 		endpointServiceID,
 		interfaceEndpointRequest)
@@ -52,7 +54,7 @@ func CreatePrivateEndpoint(mongodbClient *mongodbatlas.Client, currentModel reso
 	}
 
 	callBackContext := privateEndpointCreationCallBackContext{
-		StateName:   constants.CreatingPrivateEndpointService,
+		StateName:   constants.CreatingPrivateEndpoint,
 		Id:          endpointServiceID,
 		InterfaceId: interfaceEndpointID,
 	}
@@ -61,46 +63,54 @@ func CreatePrivateEndpoint(mongodbClient *mongodbatlas.Client, currentModel reso
 	data, _ := json.Marshal(callBackContext)
 	json.Unmarshal(data, &callBackMap)
 
-	return progress_events.GetInProgressProgressEvent("Creating private endpoint service", currentModel, callBackMap)
+	return progress_events.GetInProgressProgressEvent("Creating private endpoint service", callBackMap)
 }
 
-func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel *resource.Model, req handler.Request) handler.ProgressEvent {
+func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupID string, req handler.Request) (*ValidationResponse, *handler.ProgressEvent) {
 
 	callBackContext := privateEndpointCreationCallBackContext{}
 
 	err := callBackContext.FillStruct(req.CallbackContext)
 	if err != nil {
-		return progress_events.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
+		pe := progress_events.GetFailedEventByCode(fmt.Sprintf("Error parsing PrivateEndpointCallBackContext : %s", err.Error()), cloudformation.HandlerErrorCodeServiceInternalError)
+		return nil, &pe
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.GetOnePrivateEndpoint(context.Background(),
-		*currentModel.GroupId,
+		groupID,
 		ProviderName,
 		callBackContext.Id,
 		callBackContext.InterfaceId)
 	if err != nil {
-		return progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
+		pe := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response)
+		return nil, &pe
 	}
 
 	switch privateEndpointResponse.AWSConnectionStatus {
 	case StatusPendingAcceptance, StatusPending:
 		{
-			return progress_events.GetInProgressProgressEvent("Private endpoint service initiating", currentModel, req.CallbackContext)
+			pe := progress_events.GetInProgressProgressEvent("Private endpoint service initiating", req.CallbackContext)
+			return nil, &pe
 		}
 	case StatusAvailable:
 		{
-			currentModel.Id = &callBackContext.Id
-			currentModel.InterfaceEndpoints = []string{callBackContext.InterfaceId}
-			return handler.ProgressEvent{
-				OperationStatus: handler.Success,
-				Message:         "Create Completed",
-				ResourceModel:   currentModel}
+			vr := ValidationResponse{
+				Id:                 callBackContext.Id,
+				InterfaceEndpoints: []string{callBackContext.InterfaceId},
+			}
+			return &vr, nil
 		}
 	}
 
-	return handler.ProgressEvent{
+	pe := handler.ProgressEvent{
 		OperationStatus:  handler.Failed,
 		Message:          fmt.Sprintf("Resource is in status : %s", privateEndpointResponse.AWSConnectionStatus),
 		HandlerErrorCode: cloudformation.HandlerErrorCodeAlreadyExists}
+	return nil, &pe
+}
+
+type ValidationResponse struct {
+	Id                 string
+	InterfaceEndpoints []string
 }

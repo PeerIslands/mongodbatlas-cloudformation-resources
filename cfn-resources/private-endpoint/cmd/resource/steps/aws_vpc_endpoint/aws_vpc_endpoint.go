@@ -7,22 +7,21 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-func CreateVpcEndpoint(peCon mongodbatlas.PrivateEndpointConnection, currentModel *resource.Model) (*string, *handler.ProgressEvent) {
+func CreateVpcEndpoint(peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, VpcId string) (*string, *handler.ProgressEvent) {
 	mySession := session.Must(session.NewSession())
 
 	// Create a EC2 client from just a session.
-	svc := ec2.New(mySession, aws.NewConfig().WithRegion(*currentModel.Region))
+	svc := ec2.New(mySession, aws.NewConfig().WithRegion(region))
 
-	subnetIds := []*string{currentModel.SubnetId}
+	subnetIds := []*string{&subnetId}
 
 	vcpType := "Interface"
 
 	connection := ec2.CreateVpcEndpointInput{
-		VpcId:           currentModel.VpcId,
+		VpcId:           &VpcId,
 		ServiceName:     &peCon.EndpointServiceName,
 		VpcEndpointType: &vcpType,
 		SubnetIds:       subnetIds,

@@ -7,9 +7,7 @@ import (
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/constants"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/private-endpoint/cmd/resource"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
-	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/structs"
 	"go.mongodb.org/atlas/mongodbatlas"
 	"net/http"
 )
@@ -26,24 +24,27 @@ type privateEndpointCreationCallBackContext struct {
 }
 
 func (s *privateEndpointCreationCallBackContext) FillStruct(m map[string]interface{}) error {
-	for k, v := range m {
-		err := structs.SetField(s, k, v)
-		if err != nil {
-			return err
-		}
+	s.Id = fmt.Sprint(m["Id"])
+	eventStatusParam := fmt.Sprint(m["StateName"])
+	eventStatus, err := constants.ParseEventStatus(eventStatusParam)
+	if err != nil {
+		return err
 	}
+
+	s.StateName = eventStatus
+
 	return nil
 }
 
-func CreatePrivateEndpoint(mongodbClient mongodbatlas.Client, currentModel *resource.Model) handler.ProgressEvent {
+func CreatePrivateEndpoint(mongodbClient mongodbatlas.Client, region string, groupId string) handler.ProgressEvent {
 
 	privateEndpointRequest := &mongodbatlas.PrivateEndpointConnection{
 		ProviderName: ProviderName,
-		Region:       *currentModel.Region,
+		Region:       region,
 	}
 
 	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Create(context.Background(),
-		*currentModel.GroupId,
+		groupId,
 		privateEndpointRequest)
 
 	if response.Response.StatusCode == http.StatusConflict {
@@ -67,10 +68,10 @@ func CreatePrivateEndpoint(mongodbClient mongodbatlas.Client, currentModel *reso
 	data, _ := json.Marshal(callBackContext)
 	json.Unmarshal(data, &callBackMap)
 
-	return progress_events.GetInProgressProgressEvent("Creating private endpoint service", currentModel, callBackMap)
+	return progress_events.GetInProgressProgressEvent("Creating private endpoint service", callBackMap)
 }
 
-func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel *resource.Model, req handler.Request) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
+func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, groupId string, req handler.Request) (*mongodbatlas.PrivateEndpointConnection, *handler.ProgressEvent) {
 
 	PrivateEndpointCallBackContext := privateEndpointCreationCallBackContext{}
 
@@ -80,7 +81,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel
 		return nil, &ev
 	}
 
-	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), *currentModel.GroupId, ProviderName, PrivateEndpointCallBackContext.Id)
+	privateEndpointResponse, response, err := mongodbClient.PrivateEndpoints.Get(context.Background(), groupId, ProviderName, PrivateEndpointCallBackContext.Id)
 	if err != nil {
 		ev := progress_events.GetFailedEventByResponse(fmt.Sprintf("Error getting resource : %s", err.Error()),
 			response.Response)
@@ -97,7 +98,7 @@ func ValidateCreationCompletion(mongodbClient *mongodbatlas.Client, currentModel
 		data, _ := json.Marshal(callBackContext)
 
 		json.Unmarshal(data, &callBackMap)
-		ev := progress_events.GetInProgressProgressEvent("Private endpoint service initiating", currentModel, callBackMap)
+		ev := progress_events.GetInProgressProgressEvent("Private endpoint service initiating", callBackMap)
 		return nil, &ev
 	} else if privateEndpointResponse.Status == AvailableStatus {
 		return privateEndpointResponse, nil
