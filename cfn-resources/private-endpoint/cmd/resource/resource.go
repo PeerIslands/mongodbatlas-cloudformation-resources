@@ -60,12 +60,14 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		pe := private_endpoint_service.Create(*mongodbClient, *currentModel.Region, *currentModel.GroupId)
 		return addModelToProgressEvent(&pe, currentModel), nil
 	case resource_constats.CreatingPrivateEndpointService:
-		peConnection, completionValidation := private_endpoint_service.ValidateCreationCompletion(mongodbClient, *currentModel.GroupId, req)
+		peConnection, completionValidation := private_endpoint_service.ValidateCreationCompletion(mongodbClient,
+			*currentModel.GroupId, req)
 		if completionValidation != nil {
 			return addModelToProgressEvent(completionValidation, currentModel), nil
 		}
 
-		vpcEndpointId, progressEvent := aws_vpc_endpoint.Create(*peConnection, *currentModel.Region, *currentModel.SubnetId, *currentModel.VpcId)
+		vpcEndpointId, progressEvent := aws_vpc_endpoint.Create(req, *peConnection, *currentModel.Region,
+			*currentModel.SubnetId, *currentModel.VpcId)
 		if progressEvent != nil {
 			return addModelToProgressEvent(progressEvent, currentModel), nil
 		}
@@ -165,7 +167,7 @@ func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler
 			return *epr, nil
 		}
 
-		_, epr = aws_vpc_endpoint.Delete(currentModel.InterfaceEndpoints, *currentModel.Region)
+		_, epr = aws_vpc_endpoint.Delete(req, currentModel.InterfaceEndpoints, *currentModel.Region)
 		if epr != nil {
 			return *epr, nil
 		}

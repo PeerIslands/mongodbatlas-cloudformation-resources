@@ -4,20 +4,18 @@ import (
 	"fmt"
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	progress_events "github.com/mongodb/mongodbatlas-cloudformation-resources/util/progress_event"
 	"go.mongodb.org/atlas/mongodbatlas"
 )
 
-func newEc2Client(region string) *ec2.EC2 {
-	mySession := session.Must(session.NewSession())
-	return ec2.New(mySession, aws.NewConfig().WithRegion(region))
+func newEc2Client(region string, req handler.Request) *ec2.EC2 {
+	return ec2.New(req.Session, aws.NewConfig().WithRegion(region))
 }
 
-func Create(peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, VpcId string) (*string, *handler.ProgressEvent) {
-	svc := newEc2Client(region)
+func Create(req handler.Request, peCon mongodbatlas.PrivateEndpointConnection, region string, subnetId string, VpcId string) (*string, *handler.ProgressEvent) {
+	svc := newEc2Client(region, req)
 
 	vcpType := "Interface"
 
@@ -38,8 +36,8 @@ func Create(peCon mongodbatlas.PrivateEndpointConnection, region string, subnetI
 	return vpcE.VpcEndpoint.VpcEndpointId, nil
 }
 
-func Delete(interfaceEndpoints []string, region string) (*ec2.DeleteVpcEndpointsOutput, *handler.ProgressEvent) {
-	svc := newEc2Client(region)
+func Delete(req handler.Request, interfaceEndpoints []string, region string) (*ec2.DeleteVpcEndpointsOutput, *handler.ProgressEvent) {
+	svc := newEc2Client(region, req)
 
 	vpcEndpointIds := make([]*string, 0)
 
