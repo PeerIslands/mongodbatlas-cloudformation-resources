@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance
+# MongoDB::Atlas::ServerlessInstance
 
 Returns, adds, edits, and removes serverless instances.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::ServerlessInstance",
+    "Type" : "MongoDB::Atlas::ServerlessInstance",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
         "<a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>" : <i><a href="serverlessinstanceconnectionstrings.md">ServerlessInstanceConnectionStrings</a></i>,
@@ -27,7 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::ServerlessInstance
+Type: MongoDB::Atlas::ServerlessInstance
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>
     <a href="#connectionstrings" title="ConnectionStrings">ConnectionStrings</a>: <i><a href="serverlessinstanceconnectionstrings.md">ServerlessInstanceConnectionStrings</a></i>

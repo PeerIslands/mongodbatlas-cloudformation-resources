@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingOrgConfigs RoleMappingView
+# MongoDB::Atlas::FederatedSettingOrgConfigs RoleMappingView
 
 ## Syntax
 

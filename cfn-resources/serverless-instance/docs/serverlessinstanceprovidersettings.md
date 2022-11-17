@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance ServerlessInstanceProviderSettings
+# MongoDB::Atlas::ServerlessInstance ServerlessInstanceProviderSettings
 
 ## Syntax
 

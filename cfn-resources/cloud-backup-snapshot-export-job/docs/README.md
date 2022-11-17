@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportJob
+# MongoDB::Atlas::CloudBackupSnapshotExportJob
 
 Returns, adds, and removes Cloud Backup snapshot export buckets. Also returns and adds Cloud Backup export jobs.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::CloudBackupSnapshotExportJob",
+    "Type" : "MongoDB::Atlas::CloudBackupSnapshotExportJob",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
@@ -29,7 +29,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::CloudBackupSnapshotExportJob
+Type: MongoDB::Atlas::CloudBackupSnapshotExportJob
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>

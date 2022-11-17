@@ -1,4 +1,4 @@
-# Mongodb::Atlas::SearchIndex
+# MongoDB::Atlas::SearchIndex
 
 Returns, adds, edits, and removes Atlas Search indexes. Also returns and updates user-defined analyzers.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::SearchIndex",
+    "Type" : "MongoDB::Atlas::SearchIndex",
     "Properties" : {
         "<a href="#analyzer" title="Analyzer">Analyzer</a>" : <i>String</i>,
         "<a href="#analyzers" title="Analyzers">Analyzers</a>" : <i>[ <a href="apiatlasftsanalyzersviewmanual.md">ApiAtlasFTSAnalyzersViewManual</a>, ... ]</i>,
@@ -32,7 +32,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::SearchIndex
+Type: MongoDB::Atlas::SearchIndex
 Properties:
     <a href="#analyzer" title="Analyzer">Analyzer</a>: <i>String</i>
     <a href="#analyzers" title="Analyzers">Analyzers</a>: <i>

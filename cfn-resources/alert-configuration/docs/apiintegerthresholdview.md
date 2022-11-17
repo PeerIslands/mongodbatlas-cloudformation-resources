@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration ApiIntegerThresholdView
+# MongoDB::Atlas::AlertConfiguration ApiIntegerThresholdView
 
 ## Syntax
 

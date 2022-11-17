@@ -1,4 +1,4 @@
-# Mongodb::Atlas::BackupSnapshot
+# MongoDB::Atlas::BackupSnapshot
 
 Returns, takes, and removes Cloud Backup snapshots.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::BackupSnapshot",
+    "Type" : "MongoDB::Atlas::BackupSnapshot",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
@@ -27,7 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::BackupSnapshot
+Type: MongoDB::Atlas::BackupSnapshot
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>

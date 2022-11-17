@@ -1,4 +1,4 @@
-# Mongodb::Atlas::GlobalClusterConfig
+# MongoDB::Atlas::GlobalClusterConfig
 
 Congratulations on starting development!
 

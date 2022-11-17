@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance ApiKeyDefinition
+# MongoDB::Atlas::ServerlessInstance ApiKeyDefinition
 
 ## Syntax
 

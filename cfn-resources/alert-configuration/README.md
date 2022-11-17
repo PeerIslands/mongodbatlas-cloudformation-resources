@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration
+# MongoDB::Atlas::AlertConfiguration
 
 Congratulations on starting development!
 

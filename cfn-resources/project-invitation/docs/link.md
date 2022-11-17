@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ProjectInvitation Link
+# MongoDB::Atlas::ProjectInvitation Link
 
 ## Syntax
 

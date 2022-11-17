@@ -1,4 +1,4 @@
-# Mongodb::Atlas::LDAPVerify apiKeyDefinition
+# MongoDB::Atlas::LDAPVerify apiKeyDefinition
 
 ## Syntax
 

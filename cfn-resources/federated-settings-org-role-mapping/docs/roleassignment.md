@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingsOrgRoleMapping RoleAssignment
+# MongoDB::Atlas::FederatedSettingsOrgRoleMapping RoleAssignment
 
 ## Syntax
 

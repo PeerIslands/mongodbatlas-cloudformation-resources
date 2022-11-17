@@ -1,4 +1,4 @@
-# Mongodb::Atlas::Integrations apiKeyDefinition
+# MongoDB::Atlas::Integrations apiKeyDefinition
 
 ## Syntax
 

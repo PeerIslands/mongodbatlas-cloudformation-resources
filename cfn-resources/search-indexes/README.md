@@ -1,4 +1,4 @@
-# Mongodb::Atlas::SearchIndex
+# MongoDB::Atlas::SearchIndex
 
 Congratulations on starting development!
 

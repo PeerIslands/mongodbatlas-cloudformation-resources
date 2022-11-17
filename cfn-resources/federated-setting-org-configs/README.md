@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingOrgConfigs
+# MongoDB::Atlas::FederatedSettingOrgConfigs
 
 Congratulations on starting development!
 

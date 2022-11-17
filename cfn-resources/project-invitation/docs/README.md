@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ProjectInvitation
+# MongoDB::Atlas::ProjectInvitation
 
 Returns, adds, and edits collections of clusters and users in MongoDB Cloud.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::ProjectInvitation",
+    "Type" : "MongoDB::Atlas::ProjectInvitation",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
@@ -27,7 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::ProjectInvitation
+Type: MongoDB::Atlas::ProjectInvitation
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>

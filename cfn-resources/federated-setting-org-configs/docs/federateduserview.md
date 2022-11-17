@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingOrgConfigs FederatedUserView
+# MongoDB::Atlas::FederatedSettingOrgConfigs FederatedUserView
 
 ## Syntax
 

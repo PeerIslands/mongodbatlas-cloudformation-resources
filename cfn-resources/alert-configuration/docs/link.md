@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration Link
+# MongoDB::Atlas::AlertConfiguration Link
 
 ## Syntax
 

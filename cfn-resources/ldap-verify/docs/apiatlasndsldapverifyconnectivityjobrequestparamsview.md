@@ -1,4 +1,4 @@
-# Mongodb::Atlas::LDAPVerify ApiAtlasNDSLDAPVerifyConnectivityJobRequestParamsView
+# MongoDB::Atlas::LDAPVerify ApiAtlasNDSLDAPVerifyConnectivityJobRequestParamsView
 
 ## Syntax
 

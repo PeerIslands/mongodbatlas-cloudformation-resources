@@ -1,4 +1,4 @@
-# Mongodb::Atlas::Integrations
+# MongoDB::Atlas::Integrations
 
 Returns, adds, edits, and removes third-party service integration configurations. MongoDB Cloud sends alerts to each third-party service that you configure.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::Integrations",
+    "Type" : "MongoDB::Atlas::Integrations",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#groupid" title="GroupId">GroupId</a>" : <i>String</i>,
@@ -26,7 +26,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::Integrations
+Type: MongoDB::Atlas::Integrations
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#groupid" title="GroupId">GroupId</a>: <i>String</i>

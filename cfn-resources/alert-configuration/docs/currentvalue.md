@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration CurrentValue
+# MongoDB::Atlas::AlertConfiguration CurrentValue
 
 ## Syntax
 

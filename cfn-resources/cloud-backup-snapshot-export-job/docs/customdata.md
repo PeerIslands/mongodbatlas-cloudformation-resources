@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportJob customData
+# MongoDB::Atlas::CloudBackupSnapshotExportJob customData
 
 ## Syntax
 

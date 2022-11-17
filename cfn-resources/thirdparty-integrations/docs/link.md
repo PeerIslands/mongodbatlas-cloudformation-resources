@@ -1,4 +1,4 @@
-# Mongodb::Atlas::Integrations Link
+# MongoDB::Atlas::Integrations Link
 
 ## Syntax
 

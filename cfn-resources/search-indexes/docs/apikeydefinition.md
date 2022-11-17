@@ -1,4 +1,4 @@
-# Mongodb::Atlas::SearchIndex apiKeyDefinition
+# MongoDB::Atlas::SearchIndex apiKeyDefinition
 
 ## Syntax
 

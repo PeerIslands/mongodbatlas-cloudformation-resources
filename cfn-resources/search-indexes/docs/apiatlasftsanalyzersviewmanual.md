@@ -1,4 +1,4 @@
-# Mongodb::Atlas::SearchIndex ApiAtlasFTSAnalyzersViewManual
+# MongoDB::Atlas::SearchIndex ApiAtlasFTSAnalyzersViewManual
 
 ## Syntax
 

@@ -1,4 +1,4 @@
-# Mongodb::Atlas::OrgInvitation ApiOrganizationInvitationView
+# MongoDB::Atlas::OrgInvitation ApiOrganizationInvitationView
 
 ## Syntax
 

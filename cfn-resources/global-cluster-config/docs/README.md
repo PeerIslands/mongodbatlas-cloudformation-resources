@@ -1,4 +1,4 @@
-# Mongodb::Atlas::GlobalClusterConfig
+# MongoDB::Atlas::GlobalClusterConfig
 
 Returns, adds, and removes Global Cluster managed namespaces and custom zone mappings.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::GlobalClusterConfig",
+    "Type" : "MongoDB::Atlas::GlobalClusterConfig",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#clustername" title="ClusterName">ClusterName</a>" : <i>String</i>,
@@ -25,7 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::GlobalClusterConfig
+Type: MongoDB::Atlas::GlobalClusterConfig
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#clustername" title="ClusterName">ClusterName</a>: <i>String</i>

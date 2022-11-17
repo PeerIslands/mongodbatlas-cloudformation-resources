@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance ApiAtlasServerlessClusterDescriptionViewManual
+# MongoDB::Atlas::ServerlessInstance ApiAtlasServerlessClusterDescriptionViewManual
 
 ## Syntax
 

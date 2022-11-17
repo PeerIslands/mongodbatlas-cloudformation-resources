@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportBucket
+# MongoDB::Atlas::CloudBackupSnapshotExportBucket
 
 Congratulations on starting development!
 

@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration ApiMatcherView
+# MongoDB::Atlas::AlertConfiguration ApiMatcherView
 
 ## Syntax
 

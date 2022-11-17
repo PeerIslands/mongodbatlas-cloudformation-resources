@@ -1,4 +1,4 @@
-# Mongodb::Atlas::OrgInvitation apiKeyDefinition
+# MongoDB::Atlas::OrgInvitation apiKeyDefinition
 
 ## Syntax
 

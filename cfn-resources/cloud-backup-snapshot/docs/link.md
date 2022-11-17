@@ -1,4 +1,4 @@
-# Mongodb::Atlas::BackupSnapshot Link
+# MongoDB::Atlas::BackupSnapshot Link
 
 ## Syntax
 

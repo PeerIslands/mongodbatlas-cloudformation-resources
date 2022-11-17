@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance
+# MongoDB::Atlas::ServerlessInstance
 
 Congratulations on starting development!
 

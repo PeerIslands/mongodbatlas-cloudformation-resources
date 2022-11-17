@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingOrgConfigs
+# MongoDB::Atlas::FederatedSettingOrgConfigs
 
 Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::FederatedSettingOrgConfigs",
+    "Type" : "MongoDB::Atlas::FederatedSettingOrgConfigs",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#domainallowlist" title="DomainAllowList">DomainAllowList</a>" : <i>[ String, ... ]</i>,
@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::FederatedSettingOrgConfigs
+Type: MongoDB::Atlas::FederatedSettingOrgConfigs
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#domainallowlist" title="DomainAllowList">DomainAllowList</a>: <i>

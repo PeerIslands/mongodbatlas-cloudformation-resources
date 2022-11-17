@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration
+# MongoDB::Atlas::AlertConfiguration
 
 Returns and edits the conditions that trigger alerts and how MongoDB Cloud notifies users. This collection remains under revision and may change. Refer to the legacy documentation for this collection in the following link.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::AlertConfiguration",
+    "Type" : "MongoDB::Atlas::AlertConfiguration",
     "Properties" : {
         "<a href="#alertconfigid" title="AlertConfigId">AlertConfigId</a>" : <i>String</i>,
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>,
@@ -31,7 +31,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::AlertConfiguration
+Type: MongoDB::Atlas::AlertConfiguration
 Properties:
     <a href="#alertconfigid" title="AlertConfigId">AlertConfigId</a>: <i>String</i>
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">ApiKeyDefinition</a></i>

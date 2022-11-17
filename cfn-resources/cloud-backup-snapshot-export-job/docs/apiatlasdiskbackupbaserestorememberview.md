@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportJob ApiAtlasDiskBackupBaseRestoreMemberView
+# MongoDB::Atlas::CloudBackupSnapshotExportJob ApiAtlasDiskBackupBaseRestoreMemberView
 
 ## Syntax
 

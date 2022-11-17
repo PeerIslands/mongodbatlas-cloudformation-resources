@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportJob apiKeyDefinition
+# MongoDB::Atlas::CloudBackupSnapshotExportJob apiKeyDefinition
 
 ## Syntax
 

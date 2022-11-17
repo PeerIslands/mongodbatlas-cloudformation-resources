@@ -1,4 +1,4 @@
-# Mongodb::Atlas::Integrations
+# MongoDB::Atlas::Integrations
 
 Congratulations on starting development!
 

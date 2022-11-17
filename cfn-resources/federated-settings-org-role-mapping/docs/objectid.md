@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingsOrgRoleMapping ObjectId
+# MongoDB::Atlas::FederatedSettingsOrgRoleMapping ObjectId
 
 ## Syntax
 

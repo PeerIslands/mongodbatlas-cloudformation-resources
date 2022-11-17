@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance Link
+# MongoDB::Atlas::ServerlessInstance Link
 
 ## Syntax
 

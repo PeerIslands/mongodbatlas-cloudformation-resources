@@ -1,4 +1,4 @@
-# Mongodb::Atlas::AlertConfiguration ApiKeyDefinition
+# MongoDB::Atlas::AlertConfiguration ApiKeyDefinition
 
 ## Syntax
 

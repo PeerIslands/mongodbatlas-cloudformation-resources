@@ -1,4 +1,4 @@
-# Mongodb::Atlas::BackupSnapshot
+# MongoDB::Atlas::BackupSnapshot
 
 Congratulations on starting development!
 

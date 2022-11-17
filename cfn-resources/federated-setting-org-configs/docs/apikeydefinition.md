@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingOrgConfigs apiKeyDefinition
+# MongoDB::Atlas::FederatedSettingOrgConfigs apiKeyDefinition
 
 ## Syntax
 

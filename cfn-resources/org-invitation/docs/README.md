@@ -1,4 +1,4 @@
-# Mongodb::Atlas::OrgInvitation
+# MongoDB::Atlas::OrgInvitation
 
 Returns, adds, and edits organizational units in MongoDB Cloud.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::OrgInvitation",
+    "Type" : "MongoDB::Atlas::OrgInvitation",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#includecount" title="IncludeCount">IncludeCount</a>" : <i>Boolean</i>,
@@ -28,7 +28,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::OrgInvitation
+Type: MongoDB::Atlas::OrgInvitation
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#includecount" title="IncludeCount">IncludeCount</a>: <i>Boolean</i>

@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportBucket ApiAtlasDiskBackupSnapshotAWSExportBucketView
+# MongoDB::Atlas::CloudBackupSnapshotExportBucket ApiAtlasDiskBackupSnapshotAWSExportBucketView
 
 ## Syntax
 

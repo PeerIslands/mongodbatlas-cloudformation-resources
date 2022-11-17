@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingsOrgRoleMapping
+# MongoDB::Atlas::FederatedSettingsOrgRoleMapping
 
 Returns, adds, edits, and removes federation-related features such as role mappings and connected organization configurations.
 
@@ -10,7 +10,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 
 <pre>
 {
-    "Type" : "Mongodb::Atlas::FederatedSettingsOrgRoleMapping",
+    "Type" : "MongoDB::Atlas::FederatedSettingsOrgRoleMapping",
     "Properties" : {
         "<a href="#apikeys" title="ApiKeys">ApiKeys</a>" : <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>,
         "<a href="#externalgroupname" title="ExternalGroupName">ExternalGroupName</a>" : <i>String</i>,
@@ -25,7 +25,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 ### YAML
 
 <pre>
-Type: Mongodb::Atlas::FederatedSettingsOrgRoleMapping
+Type: MongoDB::Atlas::FederatedSettingsOrgRoleMapping
 Properties:
     <a href="#apikeys" title="ApiKeys">ApiKeys</a>: <i><a href="apikeydefinition.md">apiKeyDefinition</a></i>
     <a href="#externalgroupname" title="ExternalGroupName">ExternalGroupName</a>: <i>String</i>

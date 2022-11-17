@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingsOrgRoleMapping apiKeyDefinition
+# MongoDB::Atlas::FederatedSettingsOrgRoleMapping apiKeyDefinition
 
 ## Syntax
 

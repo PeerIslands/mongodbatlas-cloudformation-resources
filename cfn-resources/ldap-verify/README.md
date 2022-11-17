@@ -1,4 +1,4 @@
-# Mongodb::Atlas::LDAPVerify
+# MongoDB::Atlas::LDAPVerify
 
 Congratulations on starting development!
 

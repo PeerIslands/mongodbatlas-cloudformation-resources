@@ -1,4 +1,4 @@
-# Mongodb::Atlas::SearchIndex ApiAtlasFTSSynonymMappingDefinitionView
+# MongoDB::Atlas::SearchIndex ApiAtlasFTSSynonymMappingDefinitionView
 
 ## Syntax
 

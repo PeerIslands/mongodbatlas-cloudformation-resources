@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ProjectInvitation ApiGroupInvitationView
+# MongoDB::Atlas::ProjectInvitation ApiGroupInvitationView
 
 ## Syntax
 

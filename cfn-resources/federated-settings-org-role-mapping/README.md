@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingsOrgRoleMapping
+# MongoDB::Atlas::FederatedSettingsOrgRoleMapping
 
 Congratulations on starting development!
 

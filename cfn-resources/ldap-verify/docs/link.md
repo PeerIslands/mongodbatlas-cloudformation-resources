@@ -1,4 +1,4 @@
-# Mongodb::Atlas::LDAPVerify Link
+# MongoDB::Atlas::LDAPVerify Link
 
 ## Syntax
 

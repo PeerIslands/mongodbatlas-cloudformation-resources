@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance ServerlessInstanceConnectionStrings
+# MongoDB::Atlas::ServerlessInstance ServerlessInstanceConnectionStrings
 
 ## Syntax
 

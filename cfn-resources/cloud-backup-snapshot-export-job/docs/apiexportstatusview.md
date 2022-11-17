@@ -1,4 +1,4 @@
-# Mongodb::Atlas::CloudBackupSnapshotExportJob ApiExportStatusView
+# MongoDB::Atlas::CloudBackupSnapshotExportJob ApiExportStatusView
 
 ## Syntax
 

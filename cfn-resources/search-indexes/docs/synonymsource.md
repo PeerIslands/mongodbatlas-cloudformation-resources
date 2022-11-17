@@ -1,4 +1,4 @@
-# Mongodb::Atlas::SearchIndex SynonymSource
+# MongoDB::Atlas::SearchIndex SynonymSource
 
 ## Syntax
 

@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ServerlessInstance ServerlessInstancePrivateEndpoint
+# MongoDB::Atlas::ServerlessInstance ServerlessInstancePrivateEndpoint
 
 ## Syntax
 

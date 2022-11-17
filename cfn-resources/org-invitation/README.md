@@ -1,4 +1,4 @@
-# Mongodb::Atlas::OrgInvitation
+# MongoDB::Atlas::OrgInvitation
 
 Congratulations on starting development!
 

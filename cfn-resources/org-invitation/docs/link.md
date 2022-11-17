@@ -1,4 +1,4 @@
-# Mongodb::Atlas::OrgInvitation Link
+# MongoDB::Atlas::OrgInvitation Link
 
 ## Syntax
 

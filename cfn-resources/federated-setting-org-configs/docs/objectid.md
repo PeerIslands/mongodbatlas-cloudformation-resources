@@ -1,4 +1,4 @@
-# Mongodb::Atlas::FederatedSettingOrgConfigs ObjectId
+# MongoDB::Atlas::FederatedSettingOrgConfigs ObjectId
 
 ## Syntax
 

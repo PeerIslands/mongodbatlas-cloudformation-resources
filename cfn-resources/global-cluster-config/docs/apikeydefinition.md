@@ -1,4 +1,4 @@
-# Mongodb::Atlas::GlobalClusterConfig apiKeyDefinition
+# MongoDB::Atlas::GlobalClusterConfig apiKeyDefinition
 
 ## Syntax
 

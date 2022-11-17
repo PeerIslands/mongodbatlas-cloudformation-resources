@@ -1,4 +1,4 @@
-# Mongodb::Atlas::ProjectInvitation apiKeyDefinition
+# MongoDB::Atlas::ProjectInvitation apiKeyDefinition
 
 ## Syntax
 
