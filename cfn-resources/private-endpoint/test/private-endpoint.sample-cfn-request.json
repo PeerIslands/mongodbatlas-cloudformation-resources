@@ -1,6 +1,8 @@
 {
     "desiredResourceState" : {
         "GroupId" : "$ATLAS_ORG_ID",
+        "VpcId" : "",
+        "SubnetId": "",
         "ApiKeys" : {
             "PublicKey" : "$ATLAS_PUBLIC_KEY",
             "PrivateKey" : "$ATLAS_PRIVATE_KEY"

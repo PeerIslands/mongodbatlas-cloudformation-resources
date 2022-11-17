@@ -12,10 +12,9 @@ set -x
 
 echo "$ATLAS_PUBLIC_KEY"
 echo "$ATLAS_PRIVATE_KEY"
-echo "$projectId"
 
 function usage {
-    echo "Creates a new customdb role for the test"
+    echo "Creates a new private endpoint role for the test"
 }
 
 if [ "$#" -ne 2 ]; then usage; fi
@@ -25,7 +24,8 @@ rm -rf inputs
 mkdir inputs
 region="us-east-1"
 projectName="${1}"
-
+vpcId="${2}"
+subnetId="${3}"
 
 projectId=$(mongocli iam projects list --output json | jq --arg NAME "${projectName}" -r '.results[] | select(.name==$NAME) | .id')
 if [ -z "$projectId" ]; then
@@ -42,14 +42,18 @@ jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
    --arg groupId "$projectId" \
    --arg region "$region" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region ' \
+   --arg vpcId "$vpcId" \
+   --arg subnetId "$subnetId" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .VpcId?|=$vpcId | .SubnetId?|=$subnetId' \
    "$(dirname "$0")/inputs_1_create.template.json" > "inputs/inputs_1_create.json"
 
 jq --arg pubkey "$ATLAS_PUBLIC_KEY" \
    --arg pvtkey "$ATLAS_PRIVATE_KEY" \
-   --arg projectId "$projectId" \
+   --arg groupId "dsafasdgsdhsdfh" \
    --arg region "$region" \
-   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$projectId | .Region?|=$region ' \
+   --arg vpcId "$vpcId" \
+   --arg subnetId "$subnetId" \
+   '.ApiKeys.PublicKey?|=$pubkey | .ApiKeys.PrivateKey?|=$pvtkey | .GroupId?|=$groupId | .Region?|=$region | .VpcId?|=$vpcId | .SubnetId?|=$subnetId' \
    "$(dirname "$0")/inputs_1_invalid.template.json" > "inputs/inputs_1_invalid.json"
 
 echo "mongocli iam projects delete ${projectId} --force"

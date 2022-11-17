@@ -1,8 +1,10 @@
 {
-    "GroupId" : "$GroupId",
-    "Region" : "$Region",
+    "GroupId" : "",
+    "Region" : "",
+    "VpcId" : "",
+    "SubnetId": "",
     "ApiKeys" : {
-        "PublicKey" : "$ATLAS_PUBLIC_KEY",
-        "PrivateKey" : "$ATLAS_PRIVATE_KEY"
+        "PublicKey" : "",
+        "PrivateKey" : ""
     }
 }
