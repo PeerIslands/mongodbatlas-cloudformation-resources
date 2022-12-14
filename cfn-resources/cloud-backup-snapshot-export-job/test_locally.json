@@ -1,0 +1,23 @@
+{
+  "desiredResourceState": {
+    "GroupId": "633bf97a5684466a4793c55c",
+    "ClusterName": "cfndemo",
+    "ApiKeys": {
+      "PublicKey": "varwzorf",
+      "PrivateKey": "38df4de7-a96f-4b85-a214-5e0d82df27fa"
+    },
+    "SnapshotId": "63899a0a1a358812ca0e365f",
+    "ExportBucketId": "63661a54ea0a1b2a7ff331b9",
+    "ExportId": "63662668b0ad221f63aed1af",
+    "TestMode": "true",
+    "CustomData": [{
+      "Key": "hi",
+      "Value": "hi"
+    }]
+
+  },
+
+  "previousResourceState": {
+  }
+}
+
