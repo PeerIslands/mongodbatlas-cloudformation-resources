@@ -1,0 +1,11 @@
+{
+  "WorkspaceName": "",
+  "ProjectId": "",
+  "DataProcessRegion": {
+    "CloudProvider": "AWS",
+    "Region": "VIRGINIA_USA"
+  },
+  "StreamConfig": {
+    "Tier": "SP30"
+  }
+}

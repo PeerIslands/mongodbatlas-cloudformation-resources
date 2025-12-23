@@ -1,0 +1,160 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Complex MongoDB Atlas StreamWorkspace CloudFormation Template with all configuration fields",
+  "Parameters": {
+    "ProjectId": {
+      "Description": "Your MongoDB Cloud Project ID",
+      "Type": "String"
+    },
+    "WorkspaceName": {
+      "Description": "Name for the Stream Workspace",
+      "Type": "String"
+    },
+    "CloudProvider": {
+      "Description": "Cloud provider for data processing region (AWS only for CloudFormation)",
+      "Type": "String",
+      "Default": "AWS",
+      "AllowedValues": ["AWS"]
+    },
+    "Region": {
+      "Description": "Region for data processing",
+      "Type": "String",
+      "Default": "VIRGINIA_USA",
+      "AllowedValues": [
+        "VIRGINIA_USA",
+        "OREGON_USA",
+        "IRELAND",
+        "FRANKFURT",
+        "SYDNEY",
+        "SINGAPORE",
+        "TOKYO",
+        "SAO_PAULO"
+      ]
+    },
+    "Tier": {
+      "Description": "Stream Workspace Tier (SP30, SP50, SP100)",
+      "Type": "String",
+      "Default": "SP30",
+      "AllowedValues": ["SP30", "SP50", "SP100"]
+    },
+    "MaxTierSize": {
+      "Description": "Max tier size for the Stream Workspace (optional)",
+      "Type": "String",
+      "Default": ""
+    },
+    "Profile": {
+      "Description": "AWS Secrets Manager profile name",
+      "Type": "String",
+      "Default": "default"
+    }
+  },
+  "Conditions": {
+    "HasMaxTierSize": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "MaxTierSize"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Resources": {
+    "StreamWorkspace": {
+      "Type": "MongoDB::Atlas::StreamWorkspace",
+      "Properties": {
+        "WorkspaceName": {
+          "Ref": "WorkspaceName"
+        },
+        "ProjectId": {
+          "Ref": "ProjectId"
+        },
+        "DataProcessRegion": {
+          "CloudProvider": {
+            "Ref": "CloudProvider"
+          },
+          "Region": {
+            "Ref": "Region"
+          }
+        },
+        "StreamConfig": {
+          "Fn::If": [
+            "HasMaxTierSize",
+            {
+              "Tier": {
+                "Ref": "Tier"
+              },
+              "MaxTierSize": {
+                "Ref": "MaxTierSize"
+              }
+            },
+            {
+              "Tier": {
+                "Ref": "Tier"
+              }
+            }
+          ]
+        },
+        "Profile": {
+          "Ref": "Profile"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "StreamWorkspaceId": {
+      "Description": "The unique identifier for the Stream Workspace",
+      "Value": {
+        "Fn::GetAtt": [
+          "StreamWorkspace",
+          "Id"
+        ]
+      }
+    },
+    "StreamWorkspaceName": {
+      "Description": "The name of the Stream Workspace",
+      "Value": {
+        "Ref": "WorkspaceName"
+      }
+    },
+    "StreamWorkspaceHostnames": {
+      "Description": "List of hostnames assigned to the stream workspace",
+      "Value": {
+        "Fn::Join": [
+          ",",
+          {
+            "Fn::GetAtt": [
+              "StreamWorkspace",
+              "Hostnames"
+            ]
+          }
+        ]
+      }
+    },
+    "DataProcessRegion": {
+      "Description": "Data processing region configuration",
+      "Value": {
+        "Fn::Join": [
+          " / ",
+          [
+            {
+              "Ref": "CloudProvider"
+            },
+            {
+              "Ref": "Region"
+            }
+          ]
+        ]
+      }
+    },
+    "StreamConfigTier": {
+      "Description": "Stream workspace tier",
+      "Value": {
+        "Ref": "Tier"
+      }
+    }
+  }
+}
