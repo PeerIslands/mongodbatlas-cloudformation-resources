@@ -1,8 +1,8 @@
 {
   "Profile": "default",
   "ProjectId": "",
-  "WorkspaceName": "",
-  "ConnectionName": "ConnectionNameKafka",
+  "InstanceName": "",
+  "ConnectionName": "ConnectionNameKafkaBackwardCompat",
   "Type": "Kafka",
   "BootstrapServers": "localhost:9092,localhost:9092",
   "Authentication": {
@@ -17,3 +17,6 @@
     "auto.offset.reset": "earliest"
   }
 }
+
+
+
