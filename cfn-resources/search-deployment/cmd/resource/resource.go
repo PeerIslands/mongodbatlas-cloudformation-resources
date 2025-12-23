@@ -85,7 +85,24 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return handleError(resp, err)
 	}
 
+	// Check if response is valid (has Id)
+	if apiResp == nil || apiResp.Id == nil {
+		// Deployment might not be fully created yet, return InProgress to retry
+		return inProgressEvent("Creating Search Deployment - waiting for deployment to be ready", currentModel), nil
+	}
+
 	newModel := NewCFNSearchDeployment(currentModel, apiResp)
+
+	// Check if deployment is already in IDLE state - return SUCCESS immediately
+	if util.SafeString(newModel.StateName) == constants.IdleState {
+		return handler.ProgressEvent{
+			OperationStatus: handler.Success,
+			ResourceModel:   newModel,
+			Message:         constants.Complete,
+		}, nil
+	}
+
+	// Deployment is still transitioning, return InProgress for callback
 	return inProgressEvent("Creating Search Deployment", &newModel), nil
 }
 
@@ -122,6 +139,13 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
+
+	// Check if resource exists before updating - required by contract tests
+	_, checkResp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	if err != nil {
+		return handleError(checkResp, err)
+	}
+
 	apiReq := NewSearchDeploymentReq(currentModel)
 	_, res, err := connV2.AtlasSearchApi.UpdateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {

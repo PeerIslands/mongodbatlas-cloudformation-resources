@@ -24,7 +24,7 @@ func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20250312010.ApiSearc
 		nodeCount := respSpecs[i].NodeCount
 		resultSpecs[i] = ApiSearchDeploymentSpec{
 			InstanceSize: &instanceSize,
-			NodeCount:    &nodeCount,
+			NodeCount:    admin20250312010.PtrInt(nodeCount),
 		}
 	}
 	return Model{
