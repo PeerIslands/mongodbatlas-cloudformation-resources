@@ -19,17 +19,18 @@ import (
 	"net/http"
 	"strings"
 
+	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+
 	"github.com/aws-cloudformation/cloudformation-cli-go-plugin/cfn/handler"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/constants"
 	"github.com/mongodb/mongodbatlas-cloudformation-resources/util/progressevent"
-	admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
 )
 
-func HandleStateTransition(connV2 admin20231115014.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
+func HandleStateTransition(connV2 admin20250312010.APIClient, currentModel *Model, targetState string) handler.ProgressEvent {
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	apiResp, resp, err := connV2.AtlasSearchApi.GetAtlasSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
 		if targetState == constants.DeletedState && resp.StatusCode == http.StatusBadRequest && strings.Contains(err.Error(), SearchDeploymentDoesNotExistsError) {
 			return handler.ProgressEvent{

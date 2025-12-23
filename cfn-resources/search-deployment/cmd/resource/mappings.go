@@ -14,36 +14,39 @@
 
 package resource
 
-import admin20231115014 "go.mongodb.org/atlas-sdk/v20231115014/admin"
+import admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
 
-func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20231115014.ApiSearchDeploymentResponse) Model {
+func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20250312010.ApiSearchDeploymentResponse) Model {
 	respSpecs := apiResp.GetSpecs()
 	resultSpecs := make([]ApiSearchDeploymentSpec, len(respSpecs))
 	for i := range respSpecs {
+		instanceSize := respSpecs[i].InstanceSize
+		nodeCount := respSpecs[i].NodeCount
 		resultSpecs[i] = ApiSearchDeploymentSpec{
-			InstanceSize: &respSpecs[i].InstanceSize,
-			NodeCount:    &respSpecs[i].NodeCount,
+			InstanceSize: &instanceSize,
+			NodeCount:    &nodeCount,
 		}
 	}
 	return Model{
-		Profile:     prevModel.Profile,
-		ClusterName: prevModel.ClusterName,
-		ProjectId:   prevModel.ProjectId,
-		Id:          apiResp.Id,
-		Specs:       resultSpecs,
-		StateName:   apiResp.StateName,
+		Profile:                  prevModel.Profile,
+		ClusterName:              prevModel.ClusterName,
+		ProjectId:                prevModel.ProjectId,
+		Id:                       apiResp.Id,
+		Specs:                    resultSpecs,
+		StateName:                apiResp.StateName,
+		EncryptionAtRestProvider: apiResp.EncryptionAtRestProvider,
 	}
 }
 
-func NewSearchDeploymentReq(model *Model) admin20231115014.ApiSearchDeploymentRequest {
+func NewSearchDeploymentReq(model *Model) admin20250312010.ApiSearchDeploymentRequest {
 	modelSpecs := model.Specs
-	requestSpecs := make([]admin20231115014.ApiSearchDeploymentSpec, len(modelSpecs))
+	requestSpecs := make([]admin20250312010.ApiSearchDeploymentSpec, len(modelSpecs))
 	for i, spec := range modelSpecs {
 		// Both spec fields are required in CFN model and will be defined
-		requestSpecs[i] = admin20231115014.ApiSearchDeploymentSpec{
+		requestSpecs[i] = admin20250312010.ApiSearchDeploymentSpec{
 			InstanceSize: *spec.InstanceSize,
 			NodeCount:    *spec.NodeCount,
 		}
 	}
-	return admin20231115014.ApiSearchDeploymentRequest{Specs: requestSpecs}
+	return admin20250312010.ApiSearchDeploymentRequest{Specs: requestSpecs}
 }
