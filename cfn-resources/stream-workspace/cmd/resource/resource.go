@@ -39,6 +39,42 @@ const Kafka = "Kafka"
 const Cluster = "Cluster"
 const defaultItemsPerPage = 100
 
+// getTierValue returns a numeric value for tier comparison
+// SP2 < SP5 < SP10 < SP30 < SP50
+func getTierValue(tier string) int {
+	tierMap := map[string]int{
+		"SP2":  2,
+		"SP5":  5,
+		"SP10": 10,
+		"SP30": 30,
+		"SP50": 50,
+	}
+	if val, ok := tierMap[tier]; ok {
+		return val
+	}
+	return 0
+}
+
+// validateTierComparison validates that MaxTierSize >= Tier
+func validateTierComparison(streamConfig *StreamConfig) *handler.ProgressEvent {
+	if streamConfig == nil {
+		return nil
+	}
+	if streamConfig.Tier == nil || streamConfig.MaxTierSize == nil {
+		return nil // Both are optional, no validation needed if either is missing
+	}
+	tierValue := getTierValue(*streamConfig.Tier)
+	maxTierValue := getTierValue(*streamConfig.MaxTierSize)
+	if maxTierValue < tierValue {
+		return &handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          fmt.Sprintf("MaxTierSize (%s) must not be less than Tier (%s)", *streamConfig.MaxTierSize, *streamConfig.Tier),
+			HandlerErrorCode: string(types.HandlerErrorCodeInvalidRequest),
+		}
+	}
+	return nil
+}
+
 func initEnvWithLatestClient(req handler.Request, currentModel *Model, requiredFields []string) (*admin.APIClient, *handler.ProgressEvent) {
 	util.SetupLogger("mongodb-atlas-stream-workspace")
 
@@ -59,6 +95,11 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	conn, peErr := initEnvWithLatestClient(req, currentModel, CreateRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
+	}
+
+	// Validate tier comparison: MaxTierSize must not be less than Tier
+	if errEvent := validateTierComparison(currentModel.StreamConfig); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	ctx := context.Background()
@@ -119,6 +160,11 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	conn, peErr := initEnvWithLatestClient(req, currentModel, UpdateRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
+	}
+
+	// Validate tier comparison: MaxTierSize must not be less than Tier
+	if errEvent := validateTierComparison(currentModel.StreamConfig); errEvent != nil {
+		return *errEvent, nil
 	}
 
 	ctx := context.Background()

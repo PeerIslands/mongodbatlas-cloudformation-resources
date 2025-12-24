@@ -250,7 +250,8 @@ wait_for_stack() {
 validate_workspace_atlas() {
     local expected_name=$1
     local expected_tier=${2:-}
-    local expected_region=${3:-}
+    local expected_max_tier=${3:-}
+    local expected_region=${4:-}
     
     log_info "Validating workspace in Atlas..." >&2
     
@@ -276,6 +277,15 @@ validate_workspace_atlas() {
         else
             log_error "Tier mismatch. Expected: ${expected_tier}, Actual: ${ACTUAL_TIER}" >&2
             return 1
+        fi
+    fi
+    
+    if [ -n "${expected_max_tier}" ]; then
+        ACTUAL_MAX_TIER=$(echo "${WORKSPACE_DETAILS}" | jq -r '.streamConfig.maxTierSize // empty')
+        if [ "${ACTUAL_MAX_TIER}" == "${expected_max_tier}" ]; then
+            log_success "MaxTierSize matches: ${expected_max_tier}" >&2
+        else
+            log_warning "MaxTierSize mismatch. Expected: ${expected_max_tier}, Actual: ${ACTUAL_MAX_TIER}" >&2
         fi
     fi
     
@@ -390,7 +400,8 @@ echo ""
 cleanup_failed_stacks
 
 log_info "Creating CloudFormation stack with initial configuration..."
-log_info "Initial Config: Tier=SP30, Region=VIRGINIA_USA"
+log_info "Initial Config: Tier=SP2, MaxTierSize=SP50, Region=VIRGINIA_USA"
+log_info "Testing MaxTierSize >= Tier validation: SP2 <= SP50 (valid)"
 
 aws cloudformation create-stack \
     --stack-name "${STACK_NAME}" \
@@ -400,7 +411,8 @@ aws cloudformation create-stack \
         ParameterKey=WorkspaceName,ParameterValue="${WORKSPACE_NAME}" \
         ParameterKey=CloudProvider,ParameterValue=AWS \
         ParameterKey=Region,ParameterValue=VIRGINIA_USA \
-        ParameterKey=Tier,ParameterValue=SP30 \
+        ParameterKey=Tier,ParameterValue=SP2 \
+        ParameterKey=MaxTierSize,ParameterValue=SP50 \
         ParameterKey=Profile,ParameterValue="${PROFILE}" \
     --capabilities CAPABILITY_IAM \
     --region "${AWS_REGION}" \
@@ -427,7 +439,7 @@ echo "${STACK_OUTPUTS}" | jq '.'
 
 # Validate with Atlas CLI
 echo ""
-WORKSPACE_DETAILS_CREATE=$(validate_workspace_atlas "${WORKSPACE_NAME}" "SP30" "VIRGINIA_USA")
+WORKSPACE_DETAILS_CREATE=$(validate_workspace_atlas "${WORKSPACE_NAME}" "SP2" "SP50" "VIRGINIA_USA")
 if [ $? -ne 0 ]; then
     log_error "CREATE validation failed"
     exit 1
@@ -491,7 +503,7 @@ echo "============================================"
 echo "LIFECYCLE TEST COMPLETE"
 echo "============================================"
 echo ""
-log_success "CREATE: Workspace created successfully (SP30)"
+log_success "CREATE: Workspace created successfully (Tier=SP2, MaxTierSize=SP50)"
 log_info "UPDATE: Not supported (StreamConfig is create-only)"
 log_success "DELETE: Workspace deleted successfully"
 echo ""
