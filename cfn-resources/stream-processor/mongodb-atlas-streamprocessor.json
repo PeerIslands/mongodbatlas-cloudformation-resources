@@ -77,7 +77,12 @@
     },
     "State": {
       "type": "string",
-      "description": "The state of the stream processor. Commonly occurring states are 'CREATED', 'STARTED', 'STOPPED' and 'FAILED'. Used to start or stop the Stream Processor. Valid values are CREATED, STARTED or STOPPED. When a Stream Processor is created without specifying the state, it will default to CREATED state. When a Stream Processor is updated without specifying the state, it will default to the Previous state.\n\n**NOTE** When a Stream Processor is updated without specifying the state, it is stopped and then restored to previous state upon update completion.",
+      "description": "Current runtime state of the stream processor from Atlas API. This is a read-only field showing the actual state. Commonly occurring states are 'INIT', 'CREATING', 'CREATED', 'STARTED', 'STOPPED', 'DROPPING', 'DROPPED' and 'FAILED'.",
+      "enum": ["INIT", "CREATING", "CREATED", "STARTED", "STOPPED", "DROPPING", "DROPPED", "FAILED"]
+    },
+    "DesiredState": {
+      "type": "string",
+      "description": "Desired state for the stream processor. Set to STARTED to start processing, CREATED or STOPPED to stop processing. When not specified during creation, processor will default to CREATED state. When not specified during update, processor will retain its previous desired state.\n\n**NOTE**: During updates, the processor may be temporarily stopped and then restored to the desired state.",
       "enum": ["CREATED", "STARTED", "STOPPED"]
     },
     "Options": {
@@ -102,7 +107,7 @@
   },
   "additionalProperties": false,
   "required": ["ProjectId", "ProcessorName", "Pipeline"],
-  "readOnlyProperties": ["/properties/Id", "/properties/Stats"],
+  "readOnlyProperties": ["/properties/Id", "/properties/Stats", "/properties/State"],
   "writeOnlyProperties": ["/properties/DeleteOnCreateTimeout"],
   "primaryIdentifier": [
     "/properties/ProjectId",

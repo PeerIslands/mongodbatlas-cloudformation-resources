@@ -139,7 +139,12 @@ func GetStreamProcessorModel(streamProcessor *admin.StreamsProcessorWithStats, c
 
 	model.ProcessorName = util.Pointer(streamProcessor.Name)
 	model.Id = util.Pointer(streamProcessor.Id)
-	model.State = util.Pointer(streamProcessor.State)
+	model.State = util.Pointer(streamProcessor.State) // Populate State from API (readonly)
+
+	// Preserve user's DesiredState from input if present
+	if currentModel != nil && currentModel.DesiredState != nil {
+		model.DesiredState = currentModel.DesiredState
+	}
 
 	if currentModel != nil && currentModel.Pipeline != nil {
 		model.Pipeline = currentModel.Pipeline

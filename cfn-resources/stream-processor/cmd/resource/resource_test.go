@@ -1951,7 +1951,7 @@ func TestCreateWithMocks(t *testing.T) {
 				ProcessorName: util.StringPtr("processor-1"),
 				WorkspaceName: util.StringPtr("workspace-1"),
 				Pipeline:      util.StringPtr(`[{"$match": {"status": "active"}}]`),
-				State:         util.StringPtr(CreatedState),
+				DesiredState:  util.StringPtr(CreatedState),
 			},
 			mockSetup: func(m *mockadmin.StreamsApi) {
 				req := admin20250312010.CreateStreamProcessorApiRequest{ApiService: m}
@@ -1969,7 +1969,7 @@ func TestCreateWithMocks(t *testing.T) {
 				ProcessorName: util.StringPtr("processor-1"),
 				WorkspaceName: util.StringPtr("workspace-1"),
 				Pipeline:      util.StringPtr(`[{"$match": {"status": "active"}}]`),
-				State:         util.StringPtr(StartedState),
+				DesiredState:  util.StringPtr(StartedState),
 			},
 			mockSetup: func(m *mockadmin.StreamsApi) {
 				req := admin20250312010.CreateStreamProcessorApiRequest{ApiService: m}
@@ -2018,7 +2018,7 @@ func TestCreateWithMocks(t *testing.T) {
 				ProcessorName: util.StringPtr("processor-1"),
 				WorkspaceName: util.StringPtr("workspace-1"),
 				Pipeline:      util.StringPtr(`[{"$match": {"status": "active"}}]`),
-				State:         util.StringPtr("INVALID_STATE"),
+				DesiredState:  util.StringPtr("INVALID_STATE"),
 			},
 			mockSetup:      func(m *mockadmin.StreamsApi) {},
 			expectedStatus: handler.Failed,
@@ -2164,14 +2164,14 @@ func TestUpdateWithMocks(t *testing.T) {
 				ProjectId:     util.StringPtr("507f1f77bcf86cd799439011"),
 				ProcessorName: util.StringPtr("processor-1"),
 				WorkspaceName: util.StringPtr("workspace-1"),
-				State:         util.StringPtr(CreatedState),
+				DesiredState:  util.StringPtr(CreatedState),
 			},
 			currentModel: &Model{
 				ProjectId:     util.StringPtr("507f1f77bcf86cd799439011"),
 				ProcessorName: util.StringPtr("processor-1"),
 				WorkspaceName: util.StringPtr("workspace-1"),
 				Pipeline:      util.StringPtr(`[{"$match": {"status": "active"}}]`),
-				State:         util.StringPtr(CreatedState),
+				DesiredState:  util.StringPtr(CreatedState),
 			},
 			mockSetup: func(m *mockadmin.StreamsApi) {
 				// Get current state

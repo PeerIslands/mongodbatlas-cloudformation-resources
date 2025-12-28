@@ -11,6 +11,7 @@ type Model struct {
 	ProcessorName         *string         `json:",omitempty"`
 	Pipeline              *string         `json:",omitempty"`
 	State                 *string         `json:",omitempty"`
+	DesiredState          *string         `json:",omitempty"`
 	Options               *StreamsOptions `json:",omitempty"`
 	Id                    *string         `json:",omitempty"`
 	Stats                 *string         `json:",omitempty"`

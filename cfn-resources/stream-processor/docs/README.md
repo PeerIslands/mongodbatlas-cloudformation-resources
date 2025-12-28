@@ -18,7 +18,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#workspacename" title="WorkspaceName">WorkspaceName</a>" : <i>String</i>,
         "<a href="#processorname" title="ProcessorName">ProcessorName</a>" : <i>String</i>,
         "<a href="#pipeline" title="Pipeline">Pipeline</a>" : <i>String</i>,
-        "<a href="#state" title="State">State</a>" : <i>String</i>,
+        "<a href="#desiredstate" title="DesiredState">DesiredState</a>" : <i>String</i>,
         "<a href="#options" title="Options">Options</a>" : <i><a href="streamsoptions.md">StreamsOptions</a></i>,
         "<a href="#timeouts" title="Timeouts">Timeouts</a>" : <i><a href="timeouts.md">Timeouts</a></i>,
         "<a href="#deleteoncreatetimeout" title="DeleteOnCreateTimeout">DeleteOnCreateTimeout</a>" : <i>Boolean</i>
@@ -37,7 +37,7 @@ Properties:
     <a href="#workspacename" title="WorkspaceName">WorkspaceName</a>: <i>String</i>
     <a href="#processorname" title="ProcessorName">ProcessorName</a>: <i>String</i>
     <a href="#pipeline" title="Pipeline">Pipeline</a>: <i>String</i>
-    <a href="#state" title="State">State</a>: <i>String</i>
+    <a href="#desiredstate" title="DesiredState">DesiredState</a>: <i>String</i>
     <a href="#options" title="Options">Options</a>: <i><a href="streamsoptions.md">StreamsOptions</a></i>
     <a href="#timeouts" title="Timeouts">Timeouts</a>: <i><a href="timeouts.md">Timeouts</a></i>
     <a href="#deleteoncreatetimeout" title="DeleteOnCreateTimeout">DeleteOnCreateTimeout</a>: <i>Boolean</i>
@@ -113,11 +113,11 @@ _Type_: String
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
-#### State
+#### DesiredState
 
-The state of the stream processor. Commonly occurring states are 'CREATED', 'STARTED', 'STOPPED' and 'FAILED'. Used to start or stop the Stream Processor. Valid values are CREATED, STARTED or STOPPED. When a Stream Processor is created without specifying the state, it will default to CREATED state. When a Stream Processor is updated without specifying the state, it will default to the Previous state.
+Desired state for the stream processor. Set to STARTED to start processing, CREATED or STOPPED to stop processing. When not specified during creation, processor will default to CREATED state. When not specified during update, processor will retain its previous desired state.
 
-**NOTE** When a Stream Processor is updated without specifying the state, it is stopped and then restored to previous state upon update completion.
+**NOTE**: During updates, the processor may be temporarily stopped and then restored to the desired state.
 
 _Required_: No
 
@@ -172,4 +172,8 @@ Unique 24-hexadecimal character string that identifies the stream processor.
 #### Stats
 
 The stats associated with the stream processor as a JSON string. Refer to the MongoDB Atlas Docs for more information.
+
+#### State
+
+Current runtime state of the stream processor from Atlas API. This is a read-only field showing the actual state. Commonly occurring states are 'INIT', 'CREATING', 'CREATED', 'STARTED', 'STOPPED', 'DROPPING', 'DROPPED' and 'FAILED'.
 

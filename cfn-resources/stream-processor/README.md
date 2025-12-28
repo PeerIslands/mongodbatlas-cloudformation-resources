@@ -44,7 +44,7 @@ aws cloudformation deploy \
     SinkConnectionName=<YOUR_CLUSTER_CONNECTION_NAME> \
     SinkDatabase=test \
     SinkCollection=output \
-    State=CREATED \
+    DesiredState=CREATED \
   --capabilities CAPABILITY_IAM \
   --region us-east-1
 ```
@@ -66,7 +66,7 @@ aws cloudformation deploy \
     DlqConnectionName=<YOUR_DLQ_CLUSTER_CONNECTION_NAME> \
     DlqDatabase=dlq \
     DlqCollection=dlq-messages \
-    State=CREATED \
+    DesiredState=CREATED \
   --capabilities CAPABILITY_IAM \
   --region us-east-1
 ```
@@ -92,7 +92,7 @@ atlas streams processors describe <PROCESSOR_NAME> \
 The `atlas streams processors describe` command should return:
 - `id`: Unique identifier of the processor (matches the `Id` attribute in CloudFormation)
 - `name`: Processor name (matches `ProcessorName` parameter)
-- `state`: Current state (CREATED, STARTED, STOPPED, or FAILED)
+- `state`: Current runtime state (INIT, CREATING, CREATED, STARTED, STOPPED, DROPPING, DROPPED, or FAILED)
 - `pipeline`: Array of pipeline stages matching your Pipeline configuration
 - `options`: DLQ configuration if provided (should match your Options.Dlq settings)
 - `stats`: Processing statistics (available when processor is STARTED)
@@ -118,7 +118,7 @@ For processors with DLQ:
 3. Select your stream workspace/instance
 4. Verify the processor appears in the **Processors** tab with:
    - **Name**: Matches the `ProcessorName` from your CloudFormation template
-   - **State**: Matches the `State` parameter (CREATED, STARTED, or STOPPED)
+   - **State**: Shows the current runtime state (may differ from your desired state during transitions)
    - **Pipeline**: Click on the processor to view pipeline stages and verify:
      - Source connection matches your `SourceConnectionName` parameter
      - Merge target connection matches your `SinkConnectionName` parameter
@@ -134,6 +134,9 @@ For processors with DLQ:
 
 - **AWS Only**: This CloudFormation resource is designed for AWS deployments. The provider is effectively AWS.
 - **WorkspaceName vs InstanceName**: Use `WorkspaceName` (preferred). `InstanceName` is supported for backward compatibility but is deprecated.
-- **State Management**: When creating a processor, specify `State: STARTED` to automatically start processing, or `State: CREATED` to create it in a stopped state.
+- **State vs DesiredState**: 
+  - `State` is a read-only output showing the actual runtime state from Atlas (INIT, CREATING, CREATED, STARTED, STOPPED, etc.)
+  - `DesiredState` is your input specifying what state you want (CREATED, STARTED, or STOPPED)
+  - Set `DesiredState: STARTED` to automatically start processing, or `DesiredState: CREATED` to create it in a stopped state
 - **Long-Running Operations**: Creating and starting stream processors can take several minutes. The resource uses callback-based state management to handle these operations asynchronously.
 - **Timeout Configuration**: Use `Timeouts.Create` to configure how long to wait for processor creation/startup (default: 20 minutes).

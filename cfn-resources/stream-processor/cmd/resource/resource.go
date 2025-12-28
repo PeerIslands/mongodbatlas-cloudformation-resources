@@ -38,6 +38,7 @@ const (
 	CreatedState    = "CREATED"
 	StartedState    = "STARTED"
 	StoppedState    = "STOPPED"
+	DroppingState   = "DROPPING"
 	DroppedState    = "DROPPED"
 	FailedState     = "FAILED"
 )
@@ -232,17 +233,17 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	processorName := util.SafeString(currentModel.ProcessorName)
 
 	var needsStarting bool
-	if currentModel.State != nil {
-		state := *currentModel.State
+	if currentModel.DesiredState != nil {
+		state := *currentModel.DesiredState
 		switch state {
 		case StartedState:
 			needsStarting = true
-		case CreatedState:
+		case CreatedState, StoppedState:
 			needsStarting = false
 		default:
 			return handler.ProgressEvent{
 				OperationStatus: handler.Failed,
-				Message:         "When creating a stream processor, the only valid states are CREATED and STARTED",
+				Message:         "When creating a stream processor, valid DesiredState values are CREATED, STARTED, or STOPPED",
 			}, nil
 		}
 	}
@@ -458,10 +459,10 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 	processorName := util.SafeString(currentModel.ProcessorName)
 
 	plannedState := CreatedState
-	if currentModel.State != nil && *currentModel.State != "" {
-		plannedState = *currentModel.State
-	} else if prevModel != nil && prevModel.State != nil {
-		plannedState = *prevModel.State
+	if currentModel.DesiredState != nil && *currentModel.DesiredState != "" {
+		plannedState = *currentModel.DesiredState
+	} else if prevModel != nil && prevModel.DesiredState != nil {
+		plannedState = *prevModel.DesiredState
 	}
 
 	requestParams := &admin.GetStreamProcessorApiParams{

@@ -51,10 +51,10 @@
       "Default": "dlq-messages",
       "Description": "Name of the collection for the DLQ"
     },
-    "State": {
+    "DesiredState": {
       "Type": "String",
       "Default": "CREATED",
-      "Description": "Initial state of the stream processor",
+      "Description": "Desired state of the stream processor. Set to STARTED to start processing, CREATED or STOPPED to stop processing.",
       "AllowedValues": [
         "CREATED",
         "STARTED",
@@ -97,8 +97,8 @@
             }
           ]
         },
-        "State": {
-          "Ref": "State"
+        "DesiredState": {
+          "Ref": "DesiredState"
         },
         "Options": {
           "Dlq": {
@@ -127,7 +127,7 @@
       }
     },
     "ProcessorState": {
-      "Description": "Current state of the stream processor",
+      "Description": "Current runtime state of the stream processor",
       "Value": {
         "Fn::GetAtt": [
           "StreamProcessor",
