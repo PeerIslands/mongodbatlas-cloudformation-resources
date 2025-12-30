@@ -14,20 +14,28 @@
 
 package resource
 
-import admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+import (
+	admin20250312010 "go.mongodb.org/atlas-sdk/v20250312010/admin"
+
+	"github.com/mongodb/mongodbatlas-cloudformation-resources/util"
+)
 
 func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20250312010.ApiSearchDeploymentResponse) Model {
 	respSpecs := apiResp.GetSpecs()
 	resultSpecs := make([]ApiSearchDeploymentSpec, len(respSpecs))
 	for i := range respSpecs {
 		instanceSize := respSpecs[i].InstanceSize
+		// Follow cluster pattern: directly assign NodeCount from API response
+		// Reference: mongodbatlas-cloudformation-resources/cfn-resources/cluster/cmd/resource/mappings.go:305,317
+		// Note: API returns int, but CFN model expects *int, so convert to pointer
 		nodeCount := respSpecs[i].NodeCount
 		resultSpecs[i] = ApiSearchDeploymentSpec{
 			InstanceSize: &instanceSize,
-			NodeCount:    admin20250312010.PtrInt(nodeCount),
+			NodeCount:    util.IntPtr(nodeCount),
 		}
 	}
-	return Model{
+
+	finalModel := Model{
 		Profile:                  prevModel.Profile,
 		ClusterName:              prevModel.ClusterName,
 		ProjectId:                prevModel.ProjectId,
@@ -36,6 +44,8 @@ func NewCFNSearchDeployment(prevModel *Model, apiResp *admin20250312010.ApiSearc
 		StateName:                apiResp.StateName,
 		EncryptionAtRestProvider: apiResp.EncryptionAtRestProvider,
 	}
+
+	return finalModel
 }
 
 func NewSearchDeploymentReq(model *Model) admin20250312010.ApiSearchDeploymentRequest {

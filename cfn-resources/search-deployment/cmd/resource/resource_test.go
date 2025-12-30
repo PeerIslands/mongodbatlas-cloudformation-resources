@@ -83,13 +83,14 @@ func TestList(t *testing.T) {
 
 func TestInProgressEvent(t *testing.T) {
 	model := createTestSearchDeploymentModel()
-	event := inProgressEvent("Test Message", model)
+	apiResp := createTestSearchDeploymentResponse()
+	event := inProgressEvent("Test Message", model, apiResp)
 
 	assert.Equal(t, handler.InProgress, event.OperationStatus)
 	assert.Equal(t, "Test Message", event.Message)
 	assert.Equal(t, int64(callBackSeconds), event.CallbackDelaySeconds)
 	assert.NotNil(t, event.CallbackContext)
-	assert.Contains(t, event.CallbackContext, constants.ID)
+	assert.Contains(t, event.CallbackContext, "callbackSearchDeployment")
 	assert.NotNil(t, event.ResourceModel)
 }
 
@@ -112,13 +113,13 @@ func TestHandleError(t *testing.T) {
 	}{
 		"AlreadyExistsError": {
 			response:          &http.Response{StatusCode: http.StatusBadRequest},
-			err:               createSDKError(SearchDeploymentAlreadyExistsError, http.StatusBadRequest),
+			err:               createSDKError(SearchDeploymentAlreadyExistsErrorAPI, http.StatusBadRequest),
 			expectedStatus:    handler.Failed,
 			expectedErrorCode: "AlreadyExists",
 		},
 		"DoesNotExistError": {
 			response:          &http.Response{StatusCode: http.StatusBadRequest},
-			err:               createSDKError(SearchDeploymentDoesNotExistsError, http.StatusBadRequest),
+			err:               createSDKError(SearchDeploymentDoesNotExistsErrorAPI, http.StatusBadRequest),
 			expectedStatus:    handler.Failed,
 			expectedErrorCode: "NotFound",
 		},
@@ -144,8 +145,8 @@ func TestHandleError(t *testing.T) {
 
 func TestConstants(t *testing.T) {
 	assert.Equal(t, 40, callBackSeconds)
-	assert.Equal(t, "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST", SearchDeploymentDoesNotExistsError)
-	assert.Equal(t, "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS", SearchDeploymentAlreadyExistsError)
+	assert.Equal(t, "ATLAS_SEARCH_DEPLOYMENT_DOES_NOT_EXIST", SearchDeploymentDoesNotExistsErrorAPI)
+	assert.Equal(t, "ATLAS_SEARCH_DEPLOYMENT_ALREADY_EXISTS", SearchDeploymentAlreadyExistsErrorAPI)
 }
 
 func TestRequiredFields(t *testing.T) {
@@ -248,23 +249,23 @@ func TestCreateWithMocks(t *testing.T) {
 		"successfulCreate": {
 			req: handler.Request{},
 			mockSetup: func(m *mockadmin.AtlasSearchApi) {
+				// Create returns response with IDLE state, so handler returns SUCCESS immediately
+				idleResp := createTestSearchDeploymentResponse()
+				stateName := "IDLE"
+				idleResp.StateName = &stateName
 				m.EXPECT().CreateClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything, mock.Anything).
 					Return(admin20250312010.CreateClusterSearchDeploymentApiRequest{ApiService: m})
 				m.EXPECT().CreateClusterSearchDeploymentExecute(mock.Anything).
-					Return(nil, &http.Response{StatusCode: 200}, nil)
-				m.EXPECT().GetClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything).
-					Return(admin20250312010.GetClusterSearchDeploymentApiRequest{ApiService: m})
-				m.EXPECT().GetClusterSearchDeploymentExecute(mock.Anything).
-					Return(createTestSearchDeploymentResponse(), &http.Response{StatusCode: 200}, nil)
+					Return(idleResp, &http.Response{StatusCode: 200}, nil)
 			},
-			expectedStatus: handler.InProgress,
+			expectedStatus: handler.Success,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
-				assert.Equal(t, "Creating Search Deployment", event.Message)
+				assert.Equal(t, constants.Complete, event.Message)
 				assert.NotNil(t, event.ResourceModel)
 			},
 		},
 		"createWithCallback": {
-			req: handler.Request{CallbackContext: map[string]interface{}{constants.ID: "test-id"}},
+			req: handler.Request{CallbackContext: map[string]interface{}{"callbackSearchDeployment": true}},
 			mockSetup: func(m *mockadmin.AtlasSearchApi) {
 				m.EXPECT().GetClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything).
 					Return(admin20250312010.GetClusterSearchDeploymentApiRequest{ApiService: m})
@@ -374,7 +375,7 @@ func TestUpdateWithMocks(t *testing.T) {
 			expectedStatus: handler.InProgress,
 		},
 		"updateWithCallback": {
-			req: handler.Request{CallbackContext: map[string]interface{}{constants.ID: "test-id"}},
+			req: handler.Request{CallbackContext: map[string]interface{}{"callbackSearchDeployment": true}},
 			mockSetup: func(m *mockadmin.AtlasSearchApi) {
 				m.EXPECT().GetClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything).
 					Return(admin20250312010.GetClusterSearchDeploymentApiRequest{ApiService: m})
@@ -386,6 +387,11 @@ func TestUpdateWithMocks(t *testing.T) {
 		"updateWithError": {
 			req: handler.Request{},
 			mockSetup: func(m *mockadmin.AtlasSearchApi) {
+				// Update handler now checks resource existence first
+				m.EXPECT().GetClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything).
+					Return(admin20250312010.GetClusterSearchDeploymentApiRequest{ApiService: m})
+				m.EXPECT().GetClusterSearchDeploymentExecute(mock.Anything).
+					Return(createTestSearchDeploymentResponse(), &http.Response{StatusCode: 200}, nil)
 				m.EXPECT().UpdateClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything, mock.Anything).
 					Return(admin20250312010.UpdateClusterSearchDeploymentApiRequest{ApiService: m})
 				m.EXPECT().UpdateClusterSearchDeploymentExecute(mock.Anything).
@@ -428,16 +434,21 @@ func TestDeleteWithMocks(t *testing.T) {
 					Return(admin20250312010.DeleteClusterSearchDeploymentApiRequest{ApiService: m})
 				m.EXPECT().DeleteClusterSearchDeploymentExecute(mock.Anything).
 					Return(&http.Response{StatusCode: 200}, nil)
+				// After delete, the handler checks if resource still exists
+				m.EXPECT().GetClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything).
+					Return(admin20250312010.GetClusterSearchDeploymentApiRequest{ApiService: m})
+				m.EXPECT().GetClusterSearchDeploymentExecute(mock.Anything).
+					Return(createTestSearchDeploymentResponse(), &http.Response{StatusCode: 200}, nil)
 			},
 			expectedStatus: handler.InProgress,
 		},
 		"deleteWithCallback": {
-			req: handler.Request{CallbackContext: map[string]interface{}{constants.ID: "test-id"}},
+			req: handler.Request{CallbackContext: map[string]interface{}{"callbackSearchDeployment": true}},
 			mockSetup: func(m *mockadmin.AtlasSearchApi) {
 				m.EXPECT().GetClusterSearchDeployment(mock.Anything, mock.Anything, mock.Anything).
 					Return(admin20250312010.GetClusterSearchDeploymentApiRequest{ApiService: m})
 				m.EXPECT().GetClusterSearchDeploymentExecute(mock.Anything).
-					Return(nil, &http.Response{StatusCode: 400}, fmt.Errorf("error: %s", SearchDeploymentDoesNotExistsError))
+					Return(nil, &http.Response{StatusCode: 404}, fmt.Errorf("not found"))
 			},
 			expectedStatus: handler.Success,
 		},

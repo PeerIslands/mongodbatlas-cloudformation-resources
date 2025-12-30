@@ -44,3 +44,17 @@ cfn invoke --function-name TestEntrypoint resource UPDATE test/searchdeployment.
 cfn invoke --function-name TestEntrypoint resource DELETE test/searchdeployment.sample-cfn-request.json
 cd -
 ```
+
+## Submitting to Private Registry
+
+After all tests pass, submit the resource to AWS CloudFormation Private Registry:
+
+```bash
+export AWS_DEFAULT_REGION=eu-west-1
+export AWS_REGION=eu-west-1
+source /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/CONVERSION_PROMPTS/setup-credentials.sh /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/CONVERSION_PROMPTS/credPersonalCfnDev.properties
+export MONGODB_ATLAS_CLUSTER_NAME='cfn-test-search-deployment-20251229'
+cd /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
+LOG_FILE="search-deployment/cfn-submit-$(date +%Y%m%d-%H%M%S).log"
+script -q "$LOG_FILE" bash -c './cfn-submit-helper.sh search-deployment'
+```

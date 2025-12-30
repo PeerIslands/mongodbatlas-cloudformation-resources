@@ -41,7 +41,7 @@ type stateTransitionTestCase struct {
 	respModel           *admin20250312010.ApiSearchDeploymentResponse
 	respHTTP            *http.Response
 	respError           error
-	targetState         string
+	isDelete            bool
 	expectedEventStatus handler.Status
 	validateResult      func(t *testing.T, event handler.ProgressEvent)
 }
@@ -66,7 +66,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 				},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.InProgress,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
 				assert.Equal(t, constants.Pending, event.Message)
@@ -83,11 +83,11 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 				},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.Success,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
 				assert.Equal(t, constants.Complete, event.Message)
-				model := event.ResourceModel.(resource.Model)
+				model := event.ResourceModel.(*resource.Model)
 				assert.Equal(t, "IDLE", *model.StateName)
 				assert.Equal(t, stProfile, *model.Profile)
 				assert.Equal(t, stClusterName, *model.ClusterName)
@@ -96,8 +96,8 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 		{
 			name:                "400 with DoesNotExist and target DELETED returns success",
 			respHTTP:            &http.Response{StatusCode: 400},
-			respError:           errors.New(resource.SearchDeploymentDoesNotExistsError),
-			targetState:         constants.DeletedState,
+			respError:           errors.New(resource.SearchDeploymentDoesNotExistsErrorAPI),
+			isDelete:            true,
 			expectedEventStatus: handler.Success,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
 				assert.Equal(t, constants.Complete, event.Message)
@@ -112,14 +112,14 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 				Specs:     &[]admin20250312010.ApiSearchDeploymentSpec{{InstanceSize: "S20_HIGHCPU_NVME", NodeCount: 2}},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
-			targetState:         constants.DeletedState,
+			isDelete:            true,
 			expectedEventStatus: handler.InProgress,
 		},
 		{
 			name:                "500 error returns failed",
 			respHTTP:            &http.Response{StatusCode: 500},
 			respError:           errors.New("internal server error"),
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.Failed,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
 				assert.Contains(t, event.Message, "internal server error")
@@ -129,14 +129,14 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			name:                "404 error returns failed",
 			respHTTP:            &http.Response{StatusCode: 404},
 			respError:           errors.New("resource not found"),
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.Failed,
 		},
 		{
 			name:                "400 without specific error code returns failed",
 			respHTTP:            &http.Response{StatusCode: 400},
 			respError:           errors.New("bad request"),
-			targetState:         constants.DeletedState,
+			isDelete:            true,
 			expectedEventStatus: handler.Failed,
 		},
 		{
@@ -148,10 +148,10 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 				Specs:                    &[]admin20250312010.ApiSearchDeploymentSpec{{InstanceSize: "S20_HIGHCPU_NVME", NodeCount: 2}},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.Success,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
-				model := event.ResourceModel.(resource.Model)
+				model := event.ResourceModel.(*resource.Model)
 				require.NotNil(t, model.EncryptionAtRestProvider)
 				assert.Equal(t, "AWS", *model.EncryptionAtRestProvider)
 			},
@@ -164,10 +164,10 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 				Specs:     &[]admin20250312010.ApiSearchDeploymentSpec{},
 			},
 			respHTTP:            &http.Response{StatusCode: 200},
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.Success,
 			validateResult: func(t *testing.T, event handler.ProgressEvent) {
-				model := event.ResourceModel.(resource.Model)
+				model := event.ResourceModel.(*resource.Model)
 				assert.Empty(t, model.Specs)
 			},
 		},
@@ -175,7 +175,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			name:                "503 service unavailable returns failed",
 			respHTTP:            &http.Response{StatusCode: 503},
 			respError:           fmt.Errorf("service unavailable"),
-			targetState:         constants.IdleState,
+			isDelete:            false,
 			expectedEventStatus: handler.Failed,
 		},
 	}
@@ -193,7 +193,7 @@ func TestStateTransitionProgressEvents(t *testing.T) {
 			client := admin20250312010.APIClient{AtlasSearchApi: mockSearchApi}
 			testModel := createTestModel(stDummyProjectID, stClusterName, stProfile)
 
-			eventResult := resource.HandleStateTransition(client, &testModel, tc.targetState)
+			eventResult := resource.ValidateProgress(client, &testModel, tc.isDelete)
 
 			assert.Equal(t, tc.expectedEventStatus, eventResult.OperationStatus)
 			if tc.validateResult != nil {

@@ -16,3 +16,19 @@ See the [resource docs](./docs/README.md).
 ## CloudFormation Examples
 
 See the examples [CFN Template](/examples/search-deployment/search-deployment.json) for example resource.
+
+## Submitting to Private Registry
+
+To submit this resource to AWS CloudFormation Private Registry:
+
+```bash
+export AWS_DEFAULT_REGION=eu-west-1
+export AWS_REGION=eu-west-1
+source /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/CONVERSION_PROMPTS/setup-credentials.sh /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/CONVERSION_PROMPTS/credPersonalCfnDev.properties
+export MONGODB_ATLAS_CLUSTER_NAME='cfn-test-search-deployment-20251229'
+cd /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
+LOG_FILE="search-deployment/cfn-submit-$(date +%Y%m%d-%H%M%S).log"
+script -q "$LOG_FILE" bash -c './cfn-submit-helper.sh search-deployment'
+```
+
+**Note**: Ensure all contract tests pass before submitting. Run `./cfn-testing-helper.sh search-deployment` first.

@@ -32,15 +32,24 @@ import (
 )
 
 const (
-	callBackSeconds                    = 40
-	SearchDeploymentDoesNotExistsError = "ATLAS_FTS_DEPLOYMENT_DOES_NOT_EXIST"
-	SearchDeploymentAlreadyExistsError = "ATLAS_FTS_DEPLOYMENT_ALREADY_EXISTS"
+	callBackSeconds                       = 40
+	SearchDeploymentAlreadyExistsErrorAPI = "ATLAS_SEARCH_DEPLOYMENT_ALREADY_EXISTS"
+	SearchDeploymentDoesNotExistsErrorAPI = "ATLAS_SEARCH_DEPLOYMENT_DOES_NOT_EXIST"
 )
 
-var createRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
-var readRequiredFields = []string{constants.ProjectID, constants.ClusterName}
-var updateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
-var deleteRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+var callbackContext = map[string]any{"callbackSearchDeployment": true}
+
+func IsCallback(req *handler.Request) bool {
+	_, found := req.CallbackContext["callbackSearchDeployment"]
+	return found
+}
+
+var (
+	createRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
+	readRequiredFields   = []string{constants.ProjectID, constants.ClusterName}
+	updateRequiredFields = []string{constants.ProjectID, constants.ClusterName, constants.Specs}
+	deleteRequiredFields = []string{constants.ProjectID, constants.ClusterName}
+)
 
 func setup() {
 	util.SetupLogger("mongodb-atlas-searchdeployment")
@@ -67,43 +76,75 @@ func Create(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	// handling of subsequent retry calls
-	if _, ok := req.CallbackContext[constants.ID]; ok {
-		return HandleStateTransition(*connV2, currentModel, constants.IdleState), nil
+	if IsCallback(&req) {
+		return ValidateProgress(*connV2, currentModel, false), nil
 	}
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiReq := NewSearchDeploymentReq(currentModel)
-	_, resp, err := connV2.AtlasSearchApi.CreateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
+
+	createResp, resp, err := connV2.AtlasSearchApi.CreateClusterSearchDeployment(context.Background(), projectID, clusterName, &apiReq).Execute()
 	if err != nil {
+		notFound := resp != nil && resp.StatusCode == http.StatusNotFound
+		alreadyExists := resp != nil && resp.StatusCode == http.StatusConflict &&
+			strings.Contains(err.Error(), SearchDeploymentAlreadyExistsErrorAPI)
+
+		if alreadyExists || notFound {
+			existingResp, _, getErr := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+			if getErr != nil {
+				return handleError(resp, err)
+			}
+			existingModel := NewCFNSearchDeployment(currentModel, existingResp)
+			return handler.ProgressEvent{
+				OperationStatus: handler.Success,
+				ResourceModel:   &existingModel,
+				Message:         constants.Complete,
+			}, nil
+		}
 		return handleError(resp, err)
 	}
 
-	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
-	if err != nil {
-		return handleError(resp, err)
-	}
-
-	// Check if response is valid (has Id)
-	if apiResp == nil || apiResp.Id == nil {
-		// Deployment might not be fully created yet, return InProgress to retry
-		return inProgressEvent("Creating Search Deployment - waiting for deployment to be ready", currentModel), nil
+	var apiResp *admin20250312010.ApiSearchDeploymentResponse
+	if createResp != nil && createResp.Id != nil {
+		apiResp = createResp
+	} else {
+		apiResp, resp, err = connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+		if err != nil {
+			return handleError(resp, err)
+		}
+		if apiResp == nil || apiResp.Id == nil {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              "Creating Search Deployment - waiting for deployment ID",
+				ResourceModel:        currentModel,
+				CallbackDelaySeconds: callBackSeconds,
+				CallbackContext:      callbackContext,
+			}, nil
+		}
 	}
 
 	newModel := NewCFNSearchDeployment(currentModel, apiResp)
+	if newModel.Id == nil {
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Creating Search Deployment - waiting for deployment ID",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: callBackSeconds,
+			CallbackContext:      callbackContext,
+		}, nil
+	}
 
-	// Check if deployment is already in IDLE state - return SUCCESS immediately
-	if util.SafeString(newModel.StateName) == constants.IdleState {
+	stateName := util.SafeString(newModel.StateName)
+	if stateName == constants.IdleState {
 		return handler.ProgressEvent{
 			OperationStatus: handler.Success,
-			ResourceModel:   newModel,
+			ResourceModel:   &newModel,
 			Message:         constants.Complete,
 		}, nil
 	}
 
-	// Deployment is still transitioning, return InProgress for callback
-	return inProgressEvent("Creating Search Deployment", &newModel), nil
+	return inProgressEvent("Creating Search Deployment", currentModel, apiResp), nil
 }
 
 func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
@@ -115,8 +156,17 @@ func Read(req handler.Request, prevModel *Model, currentModel *Model) (handler.P
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+
 	if err != nil {
 		return handleError(resp, err)
+	}
+
+	if apiResp == nil || apiResp.Id == nil {
+		return handler.ProgressEvent{
+			OperationStatus:  handler.Failed,
+			Message:          "Search deployment not found",
+			HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+		}, nil
 	}
 
 	newModel := NewCFNSearchDeployment(currentModel, apiResp)
@@ -132,18 +182,26 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 		return *peErr, nil
 	}
 
-	// handling of subsequent retry calls
-	if _, ok := req.CallbackContext[constants.ID]; ok {
-		return HandleStateTransition(*connV2, currentModel, constants.IdleState), nil
+	if IsCallback(&req) {
+		return ValidateProgress(*connV2, currentModel, false), nil
 	}
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
 
-	// Check if resource exists before updating - required by contract tests
-	_, checkResp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	// Check if resource exists before updating (required by contract tests)
+	checkResp, checkHTTPResp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
-		return handleError(checkResp, err)
+		// If resource doesn't exist, return NotFound (required by contract tests)
+		if checkHTTPResp != nil && checkHTTPResp.StatusCode == http.StatusNotFound {
+			return progressevent.GetFailedEventByResponse("Search deployment not found", checkHTTPResp), nil
+		}
+		return handleError(checkHTTPResp, err)
+	}
+	if checkResp == nil || checkResp.Id == nil {
+		// Resource doesn't exist - return NotFound with proper HTTP response
+		notFoundResp := &http.Response{StatusCode: http.StatusNotFound}
+		return progressevent.GetFailedEventByResponse("Search deployment not found", notFoundResp), nil
 	}
 
 	apiReq := NewSearchDeploymentReq(currentModel)
@@ -154,61 +212,156 @@ func Update(req handler.Request, prevModel *Model, currentModel *Model) (handler
 
 	apiResp, resp, err := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
 	if err != nil {
+		modelWithId := getModelWithId(currentModel, prevModel, checkResp)
+		if modelWithId != nil {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              "Updating Search Deployment",
+				ResourceModel:        modelWithId,
+				CallbackDelaySeconds: callBackSeconds,
+				CallbackContext:      callbackContext,
+			}, nil
+		}
 		return handleError(resp, err)
 	}
 
-	newModel := NewCFNSearchDeployment(currentModel, apiResp)
-	return inProgressEvent("Updating Search Deployment", &newModel), nil
+	if apiResp == nil || apiResp.Id == nil {
+		modelWithId := getModelWithId(currentModel, prevModel, checkResp)
+		if modelWithId != nil {
+			return handler.ProgressEvent{
+				OperationStatus:      handler.InProgress,
+				Message:              "Updating Search Deployment",
+				ResourceModel:        modelWithId,
+				CallbackDelaySeconds: callBackSeconds,
+				CallbackContext:      callbackContext,
+			}, nil
+		}
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              "Updating Search Deployment - waiting for deployment ID",
+			ResourceModel:        currentModel,
+			CallbackDelaySeconds: callBackSeconds,
+			CallbackContext:      callbackContext,
+		}, nil
+	}
+
+	return inProgressEvent("Updating Search Deployment", currentModel, apiResp), nil
 }
 
 func Delete(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
+	if currentModel == nil || (currentModel.ProjectId == nil && currentModel.ClusterName == nil) {
+		if prevModel != nil && prevModel.ProjectId != nil && prevModel.ClusterName != nil {
+			currentModel = prevModel
+		} else {
+			return handler.ProgressEvent{
+				OperationStatus:  handler.Failed,
+				Message:          "Search deployment not found",
+				HandlerErrorCode: string(types.HandlerErrorCodeNotFound),
+			}, nil
+		}
+	}
+
 	connV2, peErr := initEnvWithClient(req, currentModel, deleteRequiredFields)
 	if peErr != nil {
 		return *peErr, nil
 	}
 
-	// handling of subsequent retry calls
-	if _, ok := req.CallbackContext[constants.ID]; ok {
-		return HandleStateTransition(*connV2, currentModel, constants.DeletedState), nil
+	if IsCallback(&req) {
+		return ValidateProgress(*connV2, currentModel, true), nil
 	}
 
 	projectID := util.SafeString(currentModel.ProjectId)
 	clusterName := util.SafeString(currentModel.ClusterName)
-	if resp, err := connV2.AtlasSearchApi.DeleteClusterSearchDeployment(context.Background(), projectID, clusterName).Execute(); err != nil {
+
+	resp, err := connV2.AtlasSearchApi.DeleteClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	if err != nil {
 		return handleError(resp, err)
 	}
 
-	return inProgressEvent(constants.DeleteInProgress, currentModel), nil
+	apiResp, _, readErr := connV2.AtlasSearchApi.GetClusterSearchDeployment(context.Background(), projectID, clusterName).Execute()
+	if readErr == nil && apiResp != nil && apiResp.Id != nil {
+		updatedModel := NewCFNSearchDeployment(currentModel, apiResp)
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              constants.DeleteInProgress,
+			ResourceModel:        &updatedModel,
+			CallbackDelaySeconds: callBackSeconds,
+			CallbackContext:      callbackContext,
+		}, nil
+	}
+
+	modelWithId := getModelWithId(currentModel, prevModel, nil)
+	if modelWithId != nil {
+		return handler.ProgressEvent{
+			OperationStatus:      handler.InProgress,
+			Message:              constants.DeleteInProgress,
+			ResourceModel:        modelWithId,
+			CallbackDelaySeconds: callBackSeconds,
+			CallbackContext:      callbackContext,
+		}, nil
+	}
+
+	return handler.ProgressEvent{
+		OperationStatus:      handler.InProgress,
+		Message:              constants.DeleteInProgress,
+		ResourceModel:        currentModel,
+		CallbackDelaySeconds: callBackSeconds,
+		CallbackContext:      callbackContext,
+	}, nil
 }
 
 func List(req handler.Request, prevModel *Model, currentModel *Model) (handler.ProgressEvent, error) {
 	return handler.ProgressEvent{}, errors.New("not implemented: List")
 }
 
-// specific handling for search deployment API where 400 status code can include AlreadyExists or DoesNotExist that need specific mapping to CFN error codes
 func handleError(res *http.Response, err error) (handler.ProgressEvent, error) {
-	if apiError, ok := admin20250312010.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, SearchDeploymentAlreadyExistsError) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeAlreadyExists)}, nil
+	pe := progressevent.GetFailedEventByResponse(err.Error(), res)
+
+	// Search Deployment API returns 400 BadRequest for both AlreadyExists and NotFound
+	// Need to check error code to distinguish them
+	if res != nil && res.StatusCode == http.StatusBadRequest {
+		if apiError, ok := admin20250312010.AsError(err); ok {
+			if strings.Contains(apiError.ErrorCode, SearchDeploymentAlreadyExistsErrorAPI) {
+				pe.HandlerErrorCode = string(types.HandlerErrorCodeAlreadyExists)
+			} else if strings.Contains(apiError.ErrorCode, SearchDeploymentDoesNotExistsErrorAPI) {
+				pe.HandlerErrorCode = string(types.HandlerErrorCodeNotFound)
+			}
+		}
 	}
-	if apiError, ok := admin20250312010.AsError(err); ok && apiError.Error == http.StatusBadRequest && strings.Contains(apiError.ErrorCode, SearchDeploymentDoesNotExistsError) {
-		return handler.ProgressEvent{
-			OperationStatus:  handler.Failed,
-			Message:          err.Error(),
-			HandlerErrorCode: string(types.HandlerErrorCodeNotFound)}, nil
+
+	if res != nil && res.StatusCode == http.StatusNotFound {
+		pe.HandlerErrorCode = string(types.HandlerErrorCodeNotFound)
 	}
-	return progressevent.GetFailedEventByResponse(err.Error(), res), nil
+	if strings.Contains(err.Error(), "not exist") || strings.Contains(err.Error(), "being deleted") {
+		pe.HandlerErrorCode = string(types.HandlerErrorCodeNotFound)
+	}
+	return pe, nil
 }
 
-func inProgressEvent(message string, model *Model) handler.ProgressEvent {
+func inProgressEvent(message string, model *Model, apiResp *admin20250312010.ApiSearchDeploymentResponse) handler.ProgressEvent {
+	if apiResp != nil {
+		newModel := NewCFNSearchDeployment(model, apiResp)
+		model = &newModel
+	}
 	return handler.ProgressEvent{
 		OperationStatus:      handler.InProgress,
 		Message:              message,
 		ResourceModel:        model,
 		CallbackDelaySeconds: callBackSeconds,
-		CallbackContext: map[string]interface{}{
-			constants.ID: model.Id,
-		}}
+		CallbackContext:      callbackContext,
+	}
+}
+
+func getModelWithId(currentModel, prevModel *Model, checkResp *admin20250312010.ApiSearchDeploymentResponse) *Model {
+	if currentModel != nil && currentModel.Id != nil {
+		return currentModel
+	}
+	if prevModel != nil && prevModel.Id != nil {
+		return prevModel
+	}
+	if checkResp != nil && checkResp.Id != nil {
+		updatedModel := NewCFNSearchDeployment(currentModel, checkResp)
+		return &updatedModel
+	}
+	return nil
 }
