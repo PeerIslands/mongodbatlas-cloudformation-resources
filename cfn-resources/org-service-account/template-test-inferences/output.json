@@ -1,0 +1,9 @@
+{
+  "stage": "UPDATE",
+  "timestamp": "2025-12-31T02:36:53Z",
+  "stackName": "org-service-account-test-1767148556",
+  "region": "eu-west-1",
+  "orgId": "[REDACTED_ORG_ID]",
+  "clientId": "[REDACTED_CLIENT_ID]",
+  "stackStatus": "UPDATE_COMPLETE"
+}

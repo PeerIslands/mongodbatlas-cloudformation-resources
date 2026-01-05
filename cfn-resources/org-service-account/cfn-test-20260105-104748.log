@@ -1,0 +1,341 @@
+cfn-testing-helper.sh running for the following resources: org-service-account
+Step 1/4: Building
+Working on resource:org-service-account
+resource: org-service-account
+cfn generate
+Explicitly specify value for insertionOrder for array: Roles
+Explicitly specify value for insertionOrder for array: Secrets
+Resource schema is valid.
+Generated files for MongoDB::Atlas::OrgServiceAccount
+[0menv GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags="-s -w -X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=info -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=6fd44b283f68f7d304e99f1a8f542f5bce0040af" -tags="logging callback metrics scheduler" -o bin/bootstrap cmd/main.go
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100  1854  100  1854    0     0   3381      0 --:--:-- --:--:-- --:--:--  3383
+/Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
+Step 2/4: Generating 'cfn test' 'inputs/' folder from each 'test/cfn-test-create-inputs.sh'
+CFN_TEST_TAG=15e63b
+CFN_TEST_NEW_PROJECT_NAME=cfn-test-bot-15e63b
+PROJECT_NAME: cfn-test-bot-15e63b
+total 16
+-rw-r--r--  1 home  staff  250 Jan  5 10:47 inputs_1_create.json
+-rw-r--r--  1 home  staff  288 Jan  5 10:47 inputs_1_update.json
+resource:org-service-account inputs created OK
+{
+  "OrgId": "[REDACTED_ORG_ID]",
+  "Name": "cfn-test-bot-15e63b-org-service-account",
+  "Description": "Service account created for CFN testing",
+  "Roles": [
+    "ORG_MEMBER"
+  ],
+  "SecretExpiresAfterHours": "720",
+  "Profile": "default"
+}
+Generated inputs for: org-service-account
+----------------------------
+total 16
+-rw-r--r--  1 home  staff  250 Jan  5 10:47 inputs_1_create.json
+-rw-r--r--  1 home  staff  288 Jan  5 10:47 inputs_1_update.json
+/Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
+
+Step 3/3: Running 'cfn test' on resource type
+Working on resource:org-service-account
+starting resource handler lambda in background - capture output to: /var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/tmp.LLHAD8BRxb.org-service-account
+Started 'sam local start-lambda' with PID:19127, waiting for SAM to be ready...
+SAM is ready (waited 5 seconds)
+resource: org-service-account, running 'cfn test' with flags: --verbose
+Validating your resource specification...
+Explicitly specify value for insertionOrder for array: Roles
+Explicitly specify value for insertionOrder for array: Secrets
+Resource schema is valid.
+Validating your resource schema...
+[1m============================================== test session starts ==============================================[0m
+platform darwin -- Python 3.10.17, pytest-7.1.3, pluggy-1.0.0 -- /opt/homebrew/opt/python@3.10/bin/python3.10
+cachedir: .pytest_cache
+hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase('/Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/.hypothesis/examples')
+Test order randomisation NOT enabled. Enable with --random-order or --random-order-bucket=<bucket_type>
+rootdir: /private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T, configfile: pytest_j1hvi4jn.ini
+plugins: hypothesis-6.57.1, random-order-1.0.4, localserver-0.7.0, cov-3.0.0, typeguard-4.3.0
+[1mcollecting ... [0m[1m
+collected 24 items / 12 deselected / 12 selected                                                                [0m
+
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_delete 
+[1m------------------------------------------------- live log call -------------------------------------------------[0m
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'Secrets')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'ClientId')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'CreatedAt')
+[32mPASSED[0m[32m                                                                                                    [  8%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_create 
+[1m------------------------------------------------ live log setup -------------------------------------------------[0m
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'Secrets')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'ClientId')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'CreatedAt')
+[33mSKIPPED[0m (No writable identifiers. Skipping test.)[32m                                                         [ 16%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_read 
+[1m------------------------------------------------- live log call -------------------------------------------------[0m
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'Secrets')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'ClientId')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'CreatedAt')
+[32mPASSED[0m[32m                                                                                                    [ 25%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_create.py::contract_create_taggable [33mSKIPPED[0m[32m [ 33%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_read 
+[1m------------------------------------------------ live log setup -------------------------------------------------[0m
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'Secrets')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'ClientId')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'CreatedAt')
+[32mPASSED[0m[32m                                                                                                    [ 41%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_update [32mPASSED[0m[32m [ 50%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_delete [32mPASSED[0m[32m [ 58%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_delete.py::contract_delete_create [33mSKIPPED[0m[32m [ 66%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_misc.py::contract_check_asserts_work [32mPASSED[0m[32m [ 75%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_update.py::contract_update_read 
+[1m------------------------------------------------ live log setup -------------------------------------------------[0m
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'Secrets')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'ClientId')
+[32mINFO    [0m rpdk.core.contract.resource_client:resource_client.py:58 Caught LookupError when pruning properties for document {'properties': {'OrgId': '[REDACTED_ORG_ID]', 'Name': 'cfn-test-bot-15e63b-org-service-account', 'Description': 'Service account created for CFN testing', 'Roles': ['ORG_MEMBER'], 'SecretExpiresAfterHours': '720', 'Profile': 'default'}} and path ('properties', 'CreatedAt')
+[32mPASSED[0m[32m                                                                                                    [ 83%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_update.py::contract_update_tag_updatable [33mSKIPPED[0m[32m [ 91%][0m
+../../../../../../../../private/var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/resource/handler_update_invalid.py::contract_update_without_create [32mPASSED[0m[32m [100%][0m
+
+[32m================================= [32m[1m8 passed[0m, [33m4 skipped[0m, [33m12 deselected[0m[32m in 48.97s[0m[32m ==================================[0m
+[0mkilling sam_pid:19127
+sam_log: /var/folders/68/493dqv791js_94zvr3x_dsjr0000gn/T/tmp.LLHAD8BRxb.org-service-account
+Starting the Local Lambda Service. You can now invoke your Lambda Functions defined in your template through the endpoint.
+2026-01-05 10:47:58 [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:3001
+2026-01-05 10:47:58 [33mPress CTRL+C to quit[0m
+Invoking bootstrap (provided.al2)
+Local image is up-to-date
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: b50fea1134fe691f60b5a3a1b1f1ba0ed9d0b243351022311a777199dc65aa04
+START RequestId: 000176a1-6135-40ae-97e2-d2a9afc63e13 Version: $LATEST
+2026/01/05 15:48:06 Handler starting
+2026/01/05 15:48:06 Handler received the CREATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:07 Received event: SUCCESS
+Message: Complete
+END RequestId: 7dde460d-fa21-4ab6-8c33-a8ac389a7e1f
+REPORT RequestId: 7dde460d-fa21-4ab6-8c33-a8ac389a7e1f	Init Duration: 0.80 ms	Duration: 1875.53 ms	Billed Duration: 1876 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:07 127.0.0.1 - - [05/Jan/2026 10:48:07] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: c61e6b0379644ac9e4358e7df22751831f7eec7fef93ca5243c6599015685d6c
+START RequestId: a279fdf3-7c48-41dc-a633-549d8f86d7e5 Version: $LATEST
+2026/01/05 15:48:09 Handler starting
+2026/01/05 15:48:09 Handler received the DELETE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:10 Received event: SUCCESS
+Message: Complete
+END RequestId: cacc0f58-7e1b-479e-8a32-0bffa3a3b5da
+REPORT RequestId: cacc0f58-7e1b-479e-8a32-0bffa3a3b5da	Init Duration: 0.35 ms	Duration: 1581.07 ms	Billed Duration: 1582 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:10 127.0.0.1 - - [05/Jan/2026 10:48:10] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: 166ec7eb61b4d7cefe78e726ab1b022f91d6f5f613a0d5558430adbbd6b92662
+START RequestId: b418e85e-8a89-4c2a-bdd2-6ec57dbd6ef1 Version: $LATEST
+2026/01/05 15:48:11 Handler starting
+2026/01/05 15:48:11 Handler received the CREATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:12 Received event: SUCCESS
+Message: Complete
+END RequestId: c56ec552-85e2-4bfc-8dca-f0a8c5609c6c
+REPORT RequestId: c56ec552-85e2-4bfc-8dca-f0a8c5609c6c	Init Duration: 0.36 ms	Duration: 1384.87 ms	Billed Duration: 1385 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:13 127.0.0.1 - - [05/Jan/2026 10:48:13] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: b4c39b26339f68810f2f97ec1c8bc97046c3f8fc780a966f51756e3703da9f25
+START RequestId: 504fbfd5-a7e9-4130-993f-c9de982a360e Version: $LATEST
+2026/01/05 15:48:14 Handler starting
+2026/01/05 15:48:14 Handler received the READ action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:15 Received event: SUCCESS
+Message: Read Complete
+END RequestId: 14790983-352a-43f5-9bb7-3675347c576d
+REPORT RequestId: 14790983-352a-43f5-9bb7-3675347c576d	Init Duration: 0.33 ms	Duration: 1202.63 ms	Billed Duration: 1203 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:15 127.0.0.1 - - [05/Jan/2026 10:48:15] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: 8acfe48cfd0e663e8e6568aa6eb3cad615ff3c70ea5d547a157a6c212dd31d07
+START RequestId: cc072f73-ca72-470c-93d4-c915aa377c80 Version: $LATEST
+2026/01/05 15:48:16 Handler starting
+2026/01/05 15:48:16 Handler received the DELETE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:17 Received event: SUCCESS
+Message: Complete
+END RequestId: e7f1bb04-99c3-4764-aa03-b73040fccfbb
+REPORT RequestId: e7f1bb04-99c3-4764-aa03-b73040fccfbb	Init Duration: 0.33 ms	Duration: 1407.51 ms	Billed Duration: 1408 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:17 127.0.0.1 - - [05/Jan/2026 10:48:17] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: c13af41b47d550e4fac86dc13fbaf84746a278a07de1a29f1ac8682fb230a7b3
+START RequestId: 4d5fa5ce-540d-4024-bd06-6ac5f564822a Version: $LATEST
+2026/01/05 15:48:18 Handler starting
+2026/01/05 15:48:18 Handler received the CREATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:20 Received event: SUCCESS
+Message: Complete
+END RequestId: 57753803-813e-4e5a-b904-9d6ef396972a
+REPORT RequestId: 57753803-813e-4e5a-b904-9d6ef396972a	Init Duration: 0.47 ms	Duration: 1265.90 ms	Billed Duration: 1266 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:20 127.0.0.1 - - [05/Jan/2026 10:48:20] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: 7f62bd75b38e8e82a353dd21e2e4bd923af16e5263fce317bd1dc94a655ada0b
+START RequestId: 4b964738-c6fe-4cc3-99ea-314977c7d2cc Version: $LATEST
+2026/01/05 15:48:21 Handler starting
+2026/01/05 15:48:21 Handler received the DELETE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:22 Received event: SUCCESS
+
+Message: Complete
+END RequestId: e445a9c7-50c7-4d2e-b8cb-9d9a7113f07d
+REPORT RequestId: e445a9c7-50c7-4d2e-b8cb-9d9a7113f07d	Init Duration: 0.34 ms	Duration: 1459.36 ms	Billed Duration: 1460 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:22 127.0.0.1 - - [05/Jan/2026 10:48:22] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: cb5fb59a6f6825e3f7c6d47169b37eb2312458a5b786f7bc57a90737d2b257e6
+START RequestId: 09924165-d5d1-4620-96a9-710f6299769c Version: $LATEST
+2026/01/05 15:48:23 Handler starting
+2026/01/05 15:48:23 Handler received the READ action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:24 Received event: FAILED
+Message: READ error:https://cloud.mongodb.com/api/atlas/v2/orgs/63350255419cf25e3d511c95/serviceAccounts/mdb_sa_id_695bdd44c5d0c13a1e9e6d33 GET: HTTP 404 Not Found (Error code: "RESOURCE_NOT_FOUND") Detail: Cannot find resource mdb_sa_id_695bdd44c5d0c13a1e9e6d33. Reason: Not Found. Params: [mdb_sa_id_695bdd44c5d0c13a1e9e6d33], BadRequestDetail: 
+END RequestId: 84ef339e-5657-4d1e-a0a7-358d40cb9e49
+REPORT RequestId: 84ef339e-5657-4d1e-a0a7-358d40cb9e49	Init Duration: 0.38 ms	Duration: 1173.81 ms	Billed Duration: 1174 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:25 127.0.0.1 - - [05/Jan/2026 10:48:25] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: a6aa06ef80c1eef426cb21cf932495158df1e99b9cc0e1df76aab8b8aaaf6baf
+START RequestId: 92ddc1a4-fd8f-49ce-b38f-e42859ce0ced Version: $LATEST
+2026/01/05 15:48:26 Handler starting
+2026/01/05 15:48:26 Handler received the UPDATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:27 Received event: FAILED
+Message: Resource not found
+END RequestId: 8a1b1e14-f018-4cd5-b5ec-f6472c8f2585
+REPORT RequestId: 8a1b1e14-f018-4cd5-b5ec-f6472c8f2585	Init Duration: 0.35 ms	Duration: 1112.13 ms	Billed Duration: 1113 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:27 127.0.0.1 - - [05/Jan/2026 10:48:27] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: 106fb856554e578d0440e9163a323774e579c5f92c457a15228ac7f04ae52fe4
+START RequestId: 04b4aa87-eb2a-4f3e-9ff8-7dbfdba8c9d4 Version: $LATEST
+2026/01/05 15:48:28 Handler starting
+2026/01/05 15:48:28 Handler received the DELETE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:29 Received event: FAILED
+Message: Resource not found
+END RequestId: 87b9dd8a-1bf1-4bfe-9424-cfdae1eebe47
+REPORT RequestId: 87b9dd8a-1bf1-4bfe-9424-cfdae1eebe47	Init Duration: 0.33 ms	Duration: 1166.92 ms	Billed Duration: 1167 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:29 127.0.0.1 - - [05/Jan/2026 10:48:29] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: 74d2ab646dc8963b5743550ddd1792620278126f233c641ccad11a0cb95fc603
+START RequestId: 7455c376-34a5-475a-a648-d8a8f16ab066 Version: $LATEST
+2026/01/05 15:48:30 Handler starting
+2026/01/05 15:48:30 Handler received the DELETE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:31 Received event: FAILED
+Message: Resource not found
+END RequestId: 6330a450-3676-497a-aa4a-3fa08b7d9777
+REPORT RequestId: 6330a450-3676-497a-aa4a-3fa08b7d9777	Init Duration: 0.33 ms	Duration: 1163.39 ms	Billed Duration: 1164 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:31 127.0.0.1 - - [05/Jan/2026 10:48:31] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: fe1c061964608e3b0d6fda3fcf116ffcc5198d33f26185f2168bf89d8892035b
+START RequestId: 74fbfbe6-f208-44ca-b128-c4eef08b9ab5 Version: $LATEST
+2026/01/05 15:48:32 Handler starting
+2026/01/05 15:48:32 Handler received the CREATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:33 Received event: SUCCESS
+Message: Complete
+END RequestId: caf2ebbb-0240-4ea2-9fc0-6fd7bae67c87
+REPORT RequestId: caf2ebbb-0240-4ea2-9fc0-6fd7bae67c87	Init Duration: 0.34 ms	Duration: 1276.32 ms	Billed Duration: 1277 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:34 127.0.0.1 - - [05/Jan/2026 10:48:34] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: 1d611762df294d929db6ca7a1f23c130a78b28581e5a713979437f92a4f6c9c2
+START RequestId: 72a8c3ca-1c8c-4b62-9d2f-c000c44119b3 Version: $LATEST
+2026/01/05 15:48:35 Handler starting
+2026/01/05 15:48:35 Handler received the UPDATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:36 Received event: SUCCESS
+Message: Complete
+END RequestId: e3d8aa39-65ed-45a0-ac3c-00239e850069
+REPORT RequestId: e3d8aa39-65ed-45a0-ac3c-00239e850069	Init Duration: 0.34 ms	Duration: 1519.36 ms	Billed Duration: 1520 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:36 127.0.0.1 - - [05/Jan/2026 10:48:36] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: b7e315871979f9418a2b66cb7c9e8be9335b64d1835892da272e8f74f67f935e
+START RequestId: e9bcf733-9f25-42be-ad93-b4d4246c21d8 Version: $LATEST
+2026/01/05 15:48:37 Handler starting
+2026/01/05 15:48:37 Handler received the READ action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:38 Received event: SUCCESS
+Message: Read Complete
+END RequestId: 4e964609-30b2-4b17-9517-b8321ddf55f9
+REPORT RequestId: 4e964609-30b2-4b17-9517-b8321ddf55f9	Init Duration: 0.33 ms	Duration: 1269.83 ms	Billed Duration: 1270 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:39 127.0.0.1 - - [05/Jan/2026 10:48:39] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: d2c310b382eba7e8adceaf500a2b1e6ecf6646dbe67130bc99e58431fb6a5d58
+START RequestId: 2be5eb08-a715-4e92-b858-9a1c5b055cee Version: $LATEST
+2026/01/05 15:48:40 Handler starting
+2026/01/05 15:48:40 Handler received the DELETE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:41 Received event: SUCCESS
+Message: Complete
+END RequestId: 103e155c-d8f0-47cc-bbaf-c936f7a24fc9
+REPORT RequestId: 103e155c-d8f0-47cc-bbaf-c936f7a24fc9	Init Duration: 0.37 ms	Duration: 1434.30 ms	Billed Duration: 1435 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:41 127.0.0.1 - - [05/Jan/2026 10:48:41] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+Invoking bootstrap (provided.al2)
+Using local image: public.ecr.aws/lambda/provided:al2-rapid-x86_64.
+
+Mounting /Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources/org-service-account/bin as /var/task:ro,delegated, inside runtime container
+SAM_CONTAINER_ID: a810cb5342ba54f093fb0394ba66950172e72acdfe47aca87dc350500f8a2dd7
+START RequestId: 176d2f00-79e5-4e24-986a-95ad35b4e843 Version: $LATEST
+2026/01/05 15:48:48 Handler starting
+2026/01/05 15:48:48 Handler received the UPDATE action
+getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)getLogLevel() Environment variable LOG_LEVEL not found. Set it in template.yaml (defaultLogLevel=info)2026/01/05 15:48:50 Received event: FAILED
+Message: Resource not found
+END RequestId: 6757038e-ad26-4fca-ac11-2ab7f471a7fd
+REPORT RequestId: 6757038e-ad26-4fca-ac11-2ab7f471a7fd	Init Duration: 0.33 ms	Duration: 2253.96 ms	Billed Duration: 2254 ms	Memory Size: 256 MB	Max Memory Used: 256 MB	
+
+2026-01-05 10:48:50 127.0.0.1 - - [05/Jan/2026 10:48:50] "POST /2015-03-31/functions/TypeFunction/invocations HTTP/1.1" 200 -
+/Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
+Step 4/4: cleaning up 'cfn test' inputs 
+chmod: ./test/cfn-test-delete-inputs.sh: No such file or directory
+./cfn-testing-helper.sh: line 216: ./test/cfn-test-delete-inputs.sh: No such file or directory
+resource:org-service-account input delete FAILED
+Clean up project
+Looking up Atlas project id for resource:org-service-account project name:cfn-test-bot-15e63b-org-service-account
+No project found

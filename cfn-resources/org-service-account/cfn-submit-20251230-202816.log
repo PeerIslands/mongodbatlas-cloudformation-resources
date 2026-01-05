@@ -1,0 +1,72 @@
+allexport      	off
+braceexpand    	on
+emacs          	off
+errexit        	on
+errtrace       	off
+functrace      	off
+hashall        	on
+histexpand     	off
+history        	off
+ignoreeof      	off
+interactive-comments	on
+keyword        	off
+monitor        	off
+noclobber      	off
+noexec         	off
+noglob         	off
+nolog          	off
+notify         	off
+nounset        	off
+onecmd         	off
+physical       	off
+pipefail       	off
+posix          	off
+privileged     	off
+verbose        	off
+vi             	off
+xtrace         	off
+CFN_SUBMIT_LOG_LEVEL=debug
+cfn-submit-helper.sh running for the following resources: org-service-account
+Step 1/2: Building
+Working on resource:org-service-account
+resource: org-service-account
+cfn generate
+Explicitly specify value for insertionOrder for array: Roles
+Explicitly specify value for insertionOrder for array: Secrets
+Resource schema is valid.
+Generated files for MongoDB::Atlas::OrgServiceAccount
+[0menv GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -ldflags="-X github.com/mongodb/mongodbatlas-cloudformation-resources/util.defaultLogLevel=debug -X github.com/mongodb/mongodbatlas-cloudformation-resources/version.Version=6fd44b283f68f7d304e99f1a8f542f5bce0040af" -tags="logging callback metrics scheduler" -o bin/bootstrap cmd/main.go
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+100  1854  100  1854    0     0   4997      0 --:--:-- --:--:-- --:--:--  5010
+/Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
+Step 2/2: Submit resource type to CloudFormation Private Registry
+Working on resource:org-service-account
+resource: org-service-account
+Deleting role stack if present
+aws cloudformation update-termination-protection --no-enable-termination-protection --stack-name mongodb-atlas-orgserviceaccount-role-stack
+[?1h=
+{[m
+    "StackId": "arn:aws:cloudformation:eu-west-1:[REDACTED_AWS_ACCOUNT]:stack/m[m ongodb-atlas-orgserviceaccount-role-stack/572d22e0-e5e6-11f0-90ef-0af[m 257816959"[m
+}[m
+
+[K[?1l>aws cloudformation delete-stack --stack-name mongodb-atlas-orgserviceaccount-role-stack
+ aws cloudformation wait stack-delete-complete --stack-name mongodb-atlas-orgserviceaccount-role-stack
+Submitting to CloudFormation with flags: --verbose
+Validating your resource specification...
+Explicitly specify value for insertionOrder for array: Roles
+Explicitly specify value for insertionOrder for array: Secrets
+Resource schema is valid.
+Validating your resource schema...
+Packaging Go project
+Creating mongodb-atlas-orgserviceaccount-role-stack
+mongodb-atlas-orgserviceaccount-role-stack stack was successfully created
+Creating CloudFormationManagedUploadInfrastructure
+CloudFormationManagedUploadInfrastructure already exists. Attempting to update
+CloudFormationManagedUploadInfrastructure stack is up to date
+Successfully submitted type. Waiting for registration with token '059b514e-6e0c-4194-83c9-4506944af169' to complete.
+Registration complete.
+{'ProgressStatus': 'COMPLETE', 'Description': 'Deployment is currently in DEPLOY_STAGE of status COMPLETED', 'TypeArn': 'arn:aws:cloudformation:eu-west-1:[REDACTED_AWS_ACCOUNT]:type/resource/MongoDB-Atlas-OrgServiceAccount', 'TypeVersionArn': 'arn:aws:cloudformation:eu-west-1:[REDACTED_AWS_ACCOUNT]:type/resource/MongoDB-Atlas-OrgServiceAccount/00000002', 'ResponseMetadata': {'RequestId': 'e74428ee-8008-43a2-ac64-457e972c4f4b', 'HTTPStatusCode': 200, 'HTTPHeaders': {'x-amzn-requestid': 'e74428ee-8008-43a2-ac64-457e972c4f4b', 'date': 'Wed, 31 Dec 2025 01:30:24 GMT', 'content-type': 'text/xml', 'content-length': '699', 'connection': 'keep-alive'}, 'RetryAttempts': 0}}
+[0m/Users/home/repos/PeerIslands/Mongo-TF-CFN-Converter/mongodbatlas-cloudformation-resources/cfn-resources
